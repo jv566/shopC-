@@ -1,0 +1,746 @@
+<UserControl x:Class="Shop.Desktop.Views.Pages.HomePageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Shop.Desktop.Models" xmlns:viewmodels="clr-namespace:Shop.Desktop.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:HomePageViewModel}"
+             mc:Ignorable="d"
+             UseLayoutRounding="True"
+             d:DesignHeight="600"
+             d:DesignWidth="1000">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/Assets/Images/home-page-background.png"
+                        Stretch="Fill" />
+        </Grid.Background>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.147*" />
+                <RowDefinition Height="0.053*" />
+                <RowDefinition Height="0.604*" />
+                <RowDefinition Height="0.114*" />
+                <RowDefinition Height="0.082*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0 0 0 0">
+                <Image Source="/Assets/Images/home-title-logo.png"
+                       Width="Auto"
+                       Height="Auto"
+                       Stretch="Uniform"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       SnapsToDevicePixels="True"
+                       RenderTransformOrigin="0.5 0.3">
+                    <Image.RenderTransform>
+                        <ScaleTransform ScaleX="0.5" ScaleY="0.5"></ScaleTransform>
+                    </Image.RenderTransform>
+                </Image>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.95*" />
+                        <ColumnDefinition Width="0.05*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0"></Grid>
+                    <Grid Grid.Column="1" MouseLeftButtonUp="SettingOnClick" Cursor="Hand" Background="Transparent"></Grid>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="0 0 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.063*" />
+                    <ColumnDefinition Width="0.317*" />
+                    <ColumnDefinition Width="0.497*" />
+                    <ColumnDefinition Width="0.312*" />
+                    <ColumnDefinition Width="0.066*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.227*" />
+                        <RowDefinition Height="0.031*" />
+                        <RowDefinition Height="0.227*" />
+                        <RowDefinition Height="0.031*" />
+                        <RowDefinition Height="0.227*" />
+                        <RowDefinition Height="0.031*" />
+                        <RowDefinition Height="0.227*" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.48*" />
+                            <ColumnDefinition Width="0.04*" />
+                            <ColumnDefinition Width="0.48*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <Image Source="/Assets/Images/category-badge-background.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.25" ScaleY="0.25" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/Keting.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.05 0.04">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.18" ScaleY="0.18" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   RenderTransformOrigin="0.5 0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button Style="{StaticResource ImageButtonStyle}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Padding="0">
+                                <Image Source="/Assets/Images/category-chair-icon.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True"
+                                       RenderTransformOrigin="0.5 0.5">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="0.73" ScaleY="0.73" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Image Source="/Assets/Images/category-badge-background.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.25" ScaleY="0.25" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/Keting.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.05 0.04">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.18" ScaleY="0.18" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   RenderTransformOrigin="0.5 0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button Style="{StaticResource ImageButtonStyle}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Padding="0">
+                                <Image Source="/Assets/Images/category-chair-icon.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True"
+                                       RenderTransformOrigin="0.5 0.5">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="0.73" ScaleY="0.73" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.48*" />
+                            <ColumnDefinition Width="0.04*" />
+                            <ColumnDefinition Width="0.48*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <Image Source="/Assets/Images/category-badge-background.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.25" ScaleY="0.25" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/Keting.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.05 0.04">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.18" ScaleY="0.18" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   RenderTransformOrigin="0.5 0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button Style="{StaticResource ImageButtonStyle}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Padding="0">
+                                <Image Source="/Assets/Images/category-chair-icon.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True"
+                                       RenderTransformOrigin="0.5 0.5">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="0.73" ScaleY="0.73" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Image Source="/Assets/Images/category-badge-background.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.25" ScaleY="0.25" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/Keting.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.05 0.04">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.18" ScaleY="0.18" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   RenderTransformOrigin="0.5 0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button Style="{StaticResource ImageButtonStyle}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Padding="0">
+                                <Image Source="/Assets/Images/category-chair-icon.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True"
+                                       RenderTransformOrigin="0.5 0.5">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="0.73" ScaleY="0.73" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Button>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.48*" />
+                            <ColumnDefinition Width="0.04*" />
+                            <ColumnDefinition Width="0.48*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <Image Source="/Assets/Images/category-badge-background.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.25" ScaleY="0.25" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/Keting.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.05 0.04">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.18" ScaleY="0.18" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   RenderTransformOrigin="0.5 0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button Style="{StaticResource ImageButtonStyle}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Padding="0">
+                                <Image Source="/Assets/Images/category-chair-icon.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True"
+                                       RenderTransformOrigin="0.5 0.5">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="0.73" ScaleY="0.73" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Image Source="/Assets/Images/category-badge-background.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.25" ScaleY="0.25" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/Keting.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.05 0.04">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.18" ScaleY="0.18" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   RenderTransformOrigin="0.5 0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button Style="{StaticResource ImageButtonStyle}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Padding="0">
+                                <Image Source="/Assets/Images/category-chair-icon.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True"
+                                       RenderTransformOrigin="0.5 0.5">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="0.73" ScaleY="0.73" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Button>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Row="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.48*" />
+                            <ColumnDefinition Width="0.04*" />
+                            <ColumnDefinition Width="0.48*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <Image Source="/Assets/Images/category-badge-background.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.25" ScaleY="0.25" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/Keting.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.05 0.04">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.18" ScaleY="0.18" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   RenderTransformOrigin="0.5 0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button Style="{StaticResource ImageButtonStyle}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Padding="0">
+                                <Image Source="/Assets/Images/category-chair-icon.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True"
+                                       RenderTransformOrigin="0.5 0.5">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="0.73" ScaleY="0.73" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Image Source="/Assets/Images/category-badge-background.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.25" ScaleY="0.25" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/Keting.png"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.05 0.04">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.18" ScaleY="0.18" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   RenderTransformOrigin="0.5 0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button Style="{StaticResource ImageButtonStyle}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Padding="0">
+                                <Image Source="/Assets/Images/category-chair-icon.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True"
+                                       RenderTransformOrigin="0.5 0.5">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="0.73" ScaleY="0.73" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <Grid Grid.Column="2" Margin="12,0,12,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.7*" />
+                        <RowDefinition Height="0.3*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0"
+                          x:Name="CarouselSlideViewport"
+                          ClipToBounds="True"
+                          Margin="10 0 10 0"
+                          MouseEnter="OnCarouselMouseEnter"
+                          MouseLeave="OnCarouselMouseLeave">
+
+                        <!-- 当前图片层 -->
+                        <Grid x:Name="CurrentSlideLayer">
+                            <Rectangle x:Name="CurrentSlideRect"
+                                       RadiusX="10" RadiusY="10"
+                                       HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch"
+                                       Stretch="Fill">
+                                <Rectangle.Fill>
+                                    <ImageBrush ImageSource="{Binding CurrentBanner.ImageSource}"
+                                                Stretch="UniformToFill"/>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Grid.RenderTransform>
+                                <TranslateTransform x:Name="CurrentSlideTransform"/>
+                            </Grid.RenderTransform>
+                        </Grid>
+
+                        <!-- 下一张图片层 -->
+                        <Grid x:Name="NextSlideLayer" Visibility="Collapsed">
+                            <Rectangle x:Name="NextSlideRect"
+                                       RadiusX="10" RadiusY="10"
+                                       HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch">
+                                <Rectangle.Fill>
+                                    <ImageBrush ImageSource="{Binding CurrentBanner.ImageSource}"
+                                                Stretch="UniformToFill"/>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Grid.RenderTransform>
+                                <TranslateTransform x:Name="NextSlideTransform"/>
+                            </Grid.RenderTransform>
+                        </Grid>
+
+                        <!-- 底部指示器 -->
+                        <Border HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,0,14"
+                                Background="#26FFFFFF"
+                                CornerRadius="14"
+                                Padding="10,6">
+                            <StackPanel x:Name="CarouselIndicatorPanel"
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+
+                    <Border Grid.Row="1"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0">
+                        <Grid Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Margin="5 10 0 0"
+                                    Padding="0">
+                                <Border CornerRadius="5"
+                                        Padding="20"
+                                        Margin="0"
+                                        Background="#F6F8FC">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="122" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Width="122"
+                                                Height="92"
+                                                Background="#E7EEF7"
+                                                CornerRadius="8"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center">
+                                            <Image Source="/Assets/Images/feature-category-left.png"
+                                                    Stretch="Uniform"
+                                                    SnapsToDevicePixels="True" />
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1"
+                                                    Margin="14,0,0,0"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock Text="客厅分类"
+                                                        FontSize="20"
+                                                        FontWeight="SemiBold"
+                                                        Foreground="#202020" />
+                                            <TextBlock Text="分类介绍xxxxxxx&#x0a;xxxxxxx"
+                                                        Margin="0,10,0,0"
+                                                        FontSize="14"
+                                                        Foreground="#A8AFBA"
+                                                        TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Button>
+
+                            <Button Grid.Column="2"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Margin="0 10 5 0"
+                                    Padding="0">
+                                <Border CornerRadius="5"
+                                        Padding="20"
+                                        Margin="0"
+                                        Background="#F6F8FC">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="122" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Width="122"
+                                            Height="92"
+                                            Background="#E7EEF7"
+                                            CornerRadius="8"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                            <Image Source="/Assets/Images/feature-category-right.png"
+                                                Stretch="Uniform"
+                                                SnapsToDevicePixels="True" />
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1"
+                                                Margin="14,0,0,0"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="客厅分类"
+                                                    FontSize="20"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="#202020" />
+                                            <TextBlock Text="分类介绍xxxxxxx&#x0a;xxxxxxx"
+                                                    Margin="0,10,0,0"
+                                                    FontSize="14"
+                                                    Foreground="#A8AFBA"
+                                                    TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Column="3" Margin="0 0 0 20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0"
+                            Background="Transparent"
+                            Margin="0,0,0,12">
+                        <Grid>
+                            <Image Source="/Assets/Images/ellipse.png"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   RenderTransformOrigin="0.5 2.4">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image Source="/Assets/Images/home-3d-preview-bed.png"
+                                   Stretch="Uniform"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   SnapsToDevicePixels="True"
+                                   RenderTransformOrigin="0.5 0.5">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
+                                </Image.RenderTransform>
+                            </Image>
+                            <Button HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0,0,10,9"
+                                    Panel.ZIndex="2"
+                                    Height="50"
+                                    Style="{StaticResource ImageButtonStyle}"
+                                    Click="OnEnterProduct3DClick">
+                                <Image Source="/Assets/Images/home-enter-button.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True" />
+                            </Button>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid>
+                            <Image Source="/Assets/Images/home-vr-preview-room.png"
+                                        Stretch="Uniform"
+                                        SnapsToDevicePixels="True" />
+
+                            <Button HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0,0,10,9"
+                                    Panel.ZIndex="2"
+                                    Height="50"
+                                    Style="{StaticResource ImageButtonStyle}"
+                                    Click="OnEnterPanoramaReplacementClick">
+                                <Image Source="/Assets/Images/home-enter-button.png"
+                                       Stretch="Uniform"
+                                       SnapsToDevicePixels="True" />
+                            </Button>
+                        </Grid>
+                    </Grid>
+
+                    
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.063*" />
+                    <ColumnDefinition Width="0.888*" />
+                    <ColumnDefinition Width="0.006*" />
+                    <ColumnDefinition Width="0.352*" />
+                    <ColumnDefinition Width="0.066*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="1">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.2*" />
+                        <ColumnDefinition Width="0.03*" />
+                        <ColumnDefinition Width="0.2*" />
+                        <ColumnDefinition Width="0.03*" />
+                        <ColumnDefinition Width="0.2*" />
+                        <ColumnDefinition Width="0.03*" />
+                        <ColumnDefinition Width="0.2*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Style="{StaticResource ImageButtonStyle}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Padding="0">
+                        <Image Source="/Assets/Images/home-cart-button.png"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True" />
+                    </Button>
+
+                    <Button Grid.Column="2"
+                            Style="{StaticResource ImageButtonStyle}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom">
+                        <Image Source="/Assets/Images/home-my-orders-button.png"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True" />
+                    </Button>
+
+                    <Button Grid.Column="4"
+                            Style="{StaticResource ImageButtonStyle}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom">
+                        <Image Source="/Assets/Images/home-history-orders-button.png"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True" />
+                    </Button>
+
+                    <Button Grid.Column="6"
+                            Style="{StaticResource ImageButtonStyle}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom">
+                        <Image Source="/Assets/Images/home-qr-sync-button.png"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True" />
+                    </Button>
+
+                </Grid>
+                <Grid Grid.Column="3" Margin="0 0 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="0.25*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Style="{StaticResource ImageButtonStyle}"
+                            Height="Auto"
+                            Background="Transparent"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            BorderThickness="0">
+                        <Image Source="/Assets/Images/home-vr-library-button.png"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True" />
+                    </Button>
+                    <Button Grid.Column="1"
+                            Style="{StaticResource ImageButtonStyle}"
+                            Height="Auto"
+                            Background="Transparent"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            BorderThickness="0">
+                        <Image Source="/Assets/Images/home-effect-gallery-button.png"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True" />
+                    </Button>
+                    <Button Grid.Column="2"
+                            Style="{StaticResource ImageButtonStyle}"
+                            Height="Auto"
+                            Background="Transparent"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            BorderThickness="0">
+                        <Image Source="/Assets/Images/home-floorplan-library-button.png"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True" />
+                    </Button>
+                    <Button Grid.Column="3"
+                            Style="{StaticResource ImageButtonStyle}"
+                            Height="Auto"
+                            Background="Transparent"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            BorderThickness="0">
+                        <Image Source="/Assets/Images/home-ai-image-button.png"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True" />
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
+
+

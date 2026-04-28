@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shop.Application\Shop.Application.csproj" />
+    <ProjectReference Include="..\Shop.Infrastructure\Shop.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HelixToolkit.SharpDX.Assimp" Version="3.1.2" />
+    <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3537.50" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Web\Product3D\index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\sofa.glb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\VrHouse\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Assets\Images\ellipse.png" />
+    <None Remove="Assets\Images\Keting.png" />
+    <None Remove="Assets\Images\lunbotu.png" />
+    <None Remove="Assets\Images\Product3DShowCaseBackground.png" />
+    <Resource Include="Assets\Images\category-badge-background.png" />
+    <Resource Include="Assets\Images\category-chair-icon.png" />
+    <Resource Include="Assets\Images\ellipse.png" />
+    <Resource Include="Assets\Images\feature-category-left.png" />
+    <Resource Include="Assets\Images\feature-category-right.png" />
+    <Resource Include="Assets\Images\home-3d-preview-bed.png" />
+    <Resource Include="Assets\Images\home-cart-button.png" />
+    <Resource Include="Assets\Images\home-enter-button.png" />
+    <Resource Include="Assets\Images\home-effect-gallery-button.png" />
+    <Resource Include="Assets\Images\home-floorplan-library-button.png" />
+    <Resource Include="Assets\Images\home-history-orders-button.png" />
+    <Resource Include="Assets\Images\home-ai-image-button.png" />
+    <Resource Include="Assets\Images\home-my-orders-button.png" />
+    <Resource Include="Assets\Images\home-page-background.png" />
+    <Resource Include="Assets\Images\home-qr-sync-button.png" />
+    <Resource Include="Assets\Images\home-title-logo.png" />
+    <Resource Include="Assets\Images\home-vr-library-button.png" />
+    <Resource Include="Assets\Images\home-vr-preview-room.png" />
+    <Resource Include="Assets\Images\Keting.png" />
+    <Resource Include="Assets\Images\lunbotu.png" />
+    <Resource Include="Assets\Images\Product3DShowCaseBackground.png" />
+    <Resource Include="Assets\Images\sofa-preview.png" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Shop.Desktop</RootNamespace>
+	<PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
+</Project>
