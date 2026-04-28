@@ -5,151 +5,525 @@
              xmlns:m="clr-namespace:Shop.Maui.Models"
              x:Class="Shop.Maui.Views.HomePage"
              Title="Shop"
+             BackgroundColor="#0a1628"
              x:DataType="vm:HomePageViewModel">
 
-    <ScrollView>
-        <Grid>
-            <!-- Background -->
-            <Image Source="home_page_background.png"
-                   Aspect="AspectFill"
-                   HorizontalOptions="Fill"
-                   VerticalOptions="Fill" />
+    <Grid>
+        <Image Source="home_page_background.png"
+               Aspect="AspectFill"
+               HorizontalOptions="Fill"
+               VerticalOptions="Fill" />
 
-            <VerticalStackLayout Padding="20" Spacing="20">
+        <Grid RowDefinitions="0.147*,0.053*,0.604*,0.114*,0.082*">
 
-                <!-- Title Logo -->
+            <!-- Row 0: Title Logo -->
+            <Grid Grid.Row="0">
                 <Image Source="home_title_logo.png"
-                       HeightRequest="60"
                        Aspect="AspectFit"
-                       HorizontalOptions="Center" />
-
-                <!-- Banner Carousel -->
-                <Border Stroke="#E0E0E0"
-                        StrokeShape="RoundRectangle 16"
-                        Padding="0"
-                        HeightRequest="200"
-                        BackgroundColor="#80000000">
-                    <Grid>
-                        <Image Source="{Binding CurrentBanner.ImagePath}"
-                               Aspect="AspectFill"
-                               HorizontalOptions="Fill"
-                               VerticalOptions="Fill" />
-                        <Label Text="{Binding CurrentBanner.Title}"
-                               FontAttributes="Bold"
-                               FontSize="16"
-                               TextColor="White"
-                               BackgroundColor="#80000000"
-                               Padding="12,8"
-                               VerticalOptions="End"
-                               HorizontalOptions="Start"
-                               Margin="12" />
-                    </Grid>
-                </Border>
-
-                <Label Text="{Binding BannerIndexText}"
                        HorizontalOptions="Center"
-                       FontSize="12"
-                       TextColor="White" />
+                       VerticalOptions="Start"
+                       HeightRequest="80" />
+            </Grid>
 
-                <!-- Category Grid -->
-                <Label Text="商品分类"
-                       FontAttributes="Bold"
-                       FontSize="18"
-                       TextColor="White" />
+            <!-- Row 1: Spacer -->
 
-                <CollectionView ItemsSource="{Binding Categories}"
-                                SelectionMode="None"
-                                HeightRequest="280">
-                    <CollectionView.ItemsLayout>
-                        <GridItemsLayout Orientation="Vertical"
-                                         Span="2"
-                                         VerticalItemSpacing="12"
-                                         HorizontalItemSpacing="12" />
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="m:ProductCategoryOption">
-                            <Border Stroke="#E0E0E0"
-                                    StrokeShape="RoundRectangle 12"
-                                    Padding="16"
-                                    BackgroundColor="#CCFFFFFF">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomePageViewModel}}, Path=NavigateToProductListCommand}"
-                                                          CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <Grid>
-                                    <Image Source="category_badge_background.png"
-                                           Aspect="AspectFill"
-                                           Opacity="0.3" />
-                                    <VerticalStackLayout HorizontalOptions="Center"
-                                                         VerticalOptions="Center"
-                                                         Spacing="8">
-                                        <Image Source="category_chair_icon.png"
-                                               HeightRequest="40"
-                                               Aspect="AspectFit" />
-                                        <Label Text="{Binding DisplayName}"
-                                               HorizontalOptions="Center"
-                                               FontSize="14"
-                                               FontAttributes="Bold"
-                                               TextColor="#333" />
-                                    </VerticalStackLayout>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+            <!-- Row 2: Main Content -->
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="0.063*,0.317*,0.497*,0.312*,0.066*">
 
-                <!-- Quick Actions -->
-                <Label Text="快捷功能"
-                       FontAttributes="Bold"
-                       FontSize="18"
-                       TextColor="White" />
+                <!-- Col 0: Left Spacer -->
 
-                <Grid ColumnDefinitions="*,*"
-                      RowDefinitions="Auto,Auto"
-                      ColumnSpacing="12"
-                      RowSpacing="12">
-                    <Button Grid.Column="0"
-                            Grid.Row="0"
-                            Text="VR 全景"
-                            ImageSource="home_vr_library_button.png"
-                            ContentLayout="Left,8"
-                            Command="{Binding NavigateToPanoramaCommand}"
-                            BackgroundColor="#4CAF50"
-                            TextColor="White"
-                            CornerRadius="12"
-                            HeightRequest="56" />
-                    <Button Grid.Column="1"
-                            Grid.Row="0"
-                            Text="3D 展示"
-                            ImageSource="home_3d_preview_bed.png"
-                            ContentLayout="Left,8"
-                            Command="{Binding NavigateTo3DShowcaseCommand}"
-                            BackgroundColor="#2196F3"
-                            TextColor="White"
-                            CornerRadius="12"
-                            HeightRequest="56" />
-                    <Button Grid.Column="0"
-                            Grid.Row="1"
-                            Text="户型设计"
-                            ImageSource="home_floorplan_library_button.png"
-                            ContentLayout="Left,8"
-                            BackgroundColor="#FF9800"
-                            TextColor="White"
-                            CornerRadius="12"
-                            HeightRequest="56" />
-                    <Button Grid.Column="1"
-                            Grid.Row="1"
-                            Text="历史订单"
-                            ImageSource="home_history_orders_button.png"
-                            ContentLayout="Left,8"
-                            BackgroundColor="#9C27B0"
-                            TextColor="White"
-                            CornerRadius="12"
-                            HeightRequest="56" />
+                <!-- Col 1: Category Grid (4 rows x 2 cols = 8 items) -->
+                <Grid Grid.Column="1"
+                      RowDefinitions="0.227*,0.031*,0.227*,0.031*,0.227*,0.031*,0.227*">
+                    <!-- Row 0 -->
+                    <Grid Grid.Row="0" ColumnDefinitions="0.48*,0.04*,0.48*">
+                        <Grid Grid.Column="0">
+                            <Image Source="category_badge_background.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="30" />
+                            <Image Source="keting.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="20"
+                                   Margin="4,2,0,0" />
+                            <Image Source="ellipse.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   HeightRequest="30"
+                                   Opacity="0.6" />
+                            <ImageButton Source="category_chair_icon.png"
+                                         Aspect="AspectFit"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         HeightRequest="50"
+                                         WidthRequest="50"
+                                         BackgroundColor="Transparent"
+                                         Padding="0" />
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Image Source="category_badge_background.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="30" />
+                            <Image Source="keting.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="20"
+                                   Margin="4,2,0,0" />
+                            <Image Source="ellipse.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   HeightRequest="30"
+                                   Opacity="0.6" />
+                            <ImageButton Source="category_chair_icon.png"
+                                         Aspect="AspectFit"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         HeightRequest="50"
+                                         WidthRequest="50"
+                                         BackgroundColor="Transparent"
+                                         Padding="0" />
+                        </Grid>
+                    </Grid>
+                    <!-- Row 2 -->
+                    <Grid Grid.Row="2" ColumnDefinitions="0.48*,0.04*,0.48*">
+                        <Grid Grid.Column="0">
+                            <Image Source="category_badge_background.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="30" />
+                            <Image Source="keting.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="20"
+                                   Margin="4,2,0,0" />
+                            <Image Source="ellipse.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   HeightRequest="30"
+                                   Opacity="0.6" />
+                            <ImageButton Source="category_chair_icon.png"
+                                         Aspect="AspectFit"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         HeightRequest="50"
+                                         WidthRequest="50"
+                                         BackgroundColor="Transparent"
+                                         Padding="0" />
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Image Source="category_badge_background.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="30" />
+                            <Image Source="keting.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="20"
+                                   Margin="4,2,0,0" />
+                            <Image Source="ellipse.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   HeightRequest="30"
+                                   Opacity="0.6" />
+                            <ImageButton Source="category_chair_icon.png"
+                                         Aspect="AspectFit"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         HeightRequest="50"
+                                         WidthRequest="50"
+                                         BackgroundColor="Transparent"
+                                         Padding="0" />
+                        </Grid>
+                    </Grid>
+                    <!-- Row 4 -->
+                    <Grid Grid.Row="4" ColumnDefinitions="0.48*,0.04*,0.48*">
+                        <Grid Grid.Column="0">
+                            <Image Source="category_badge_background.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="30" />
+                            <Image Source="keting.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="20"
+                                   Margin="4,2,0,0" />
+                            <Image Source="ellipse.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   HeightRequest="30"
+                                   Opacity="0.6" />
+                            <ImageButton Source="category_chair_icon.png"
+                                         Aspect="AspectFit"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         HeightRequest="50"
+                                         WidthRequest="50"
+                                         BackgroundColor="Transparent"
+                                         Padding="0" />
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Image Source="category_badge_background.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="30" />
+                            <Image Source="keting.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="20"
+                                   Margin="4,2,0,0" />
+                            <Image Source="ellipse.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   HeightRequest="30"
+                                   Opacity="0.6" />
+                            <ImageButton Source="category_chair_icon.png"
+                                         Aspect="AspectFit"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         HeightRequest="50"
+                                         WidthRequest="50"
+                                         BackgroundColor="Transparent"
+                                         Padding="0" />
+                        </Grid>
+                    </Grid>
+                    <!-- Row 6 -->
+                    <Grid Grid.Row="6" ColumnDefinitions="0.48*,0.04*,0.48*">
+                        <Grid Grid.Column="0">
+                            <Image Source="category_badge_background.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="30" />
+                            <Image Source="keting.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="20"
+                                   Margin="4,2,0,0" />
+                            <Image Source="ellipse.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   HeightRequest="30"
+                                   Opacity="0.6" />
+                            <ImageButton Source="category_chair_icon.png"
+                                         Aspect="AspectFit"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         HeightRequest="50"
+                                         WidthRequest="50"
+                                         BackgroundColor="Transparent"
+                                         Padding="0" />
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Image Source="category_badge_background.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="30" />
+                            <Image Source="keting.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   HeightRequest="20"
+                                   Margin="4,2,0,0" />
+                            <Image Source="ellipse.png"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   HeightRequest="30"
+                                   Opacity="0.6" />
+                            <ImageButton Source="category_chair_icon.png"
+                                         Aspect="AspectFit"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         HeightRequest="50"
+                                         WidthRequest="50"
+                                         BackgroundColor="Transparent"
+                                         Padding="0" />
+                        </Grid>
+                    </Grid>
                 </Grid>
 
-            </VerticalStackLayout>
+                <!-- Col 2: Carousel + Sub-cards -->
+                <Grid Grid.Column="2"
+                      RowDefinitions="0.7*,0.3*"
+                      Margin="12,0,12,0">
+
+                    <!-- Carousel -->
+                    <Border Grid.Row="0"
+                            StrokeShape="RoundRectangle 10"
+                            Margin="10,0,10,0">
+                        <Grid>
+                            <Image Source="lunbotu.png"
+                                   Aspect="AspectFill"
+                                   HorizontalOptions="Fill"
+                                   VerticalOptions="Fill" />
+
+                            <!-- Left Arrow -->
+                            <Border BackgroundColor="#80000000"
+                                    StrokeShape="RoundRectangle 20"
+                                    Padding="8"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Center"
+                                    Margin="8">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding PrevBannerCommand}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="&#x276E;"
+                                       FontSize="20"
+                                       TextColor="White"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+
+                            <!-- Right Arrow -->
+                            <Border BackgroundColor="#80000000"
+                                    StrokeShape="RoundRectangle 20"
+                                    Padding="8"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Center"
+                                    Margin="8">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NextBannerCommand}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="&#x276F;"
+                                       FontSize="20"
+                                       TextColor="White"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+
+                            <!-- Indicator dots -->
+                            <Border HorizontalOptions="Center"
+                                    VerticalOptions="End"
+                                    Margin="0,0,0,14"
+                                    BackgroundColor="#26FFFFFF"
+                                    StrokeShape="RoundRectangle 14"
+                                    Padding="10,6">
+                                <HorizontalStackLayout Spacing="6">
+                                    <BoxView WidthRequest="8"
+                                             HeightRequest="8"
+                                             CornerRadius="4"
+                                             BackgroundColor="#c8a96e" />
+                                    <BoxView WidthRequest="8"
+                                             HeightRequest="8"
+                                             CornerRadius="4"
+                                             BackgroundColor="#555" />
+                                    <BoxView WidthRequest="8"
+                                             HeightRequest="8"
+                                             CornerRadius="4"
+                                             BackgroundColor="#555" />
+                                </HorizontalStackLayout>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Sub-cards -->
+                    <Grid Grid.Row="1"
+                          ColumnDefinitions="*,20,*"
+                          Margin="0,6,0,0">
+
+                        <!-- Left sub-card -->
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 5"
+                                Padding="20"
+                                BackgroundColor="#F6F8FC"
+                                Margin="5,10,0,0">
+                            <Grid ColumnDefinitions="122,*">
+                                <Border WidthRequest="122"
+                                        HeightRequest="92"
+                                        BackgroundColor="#E7EEF7"
+                                        StrokeShape="RoundRectangle 8"
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Center">
+                                    <Image Source="feature_category_left.png"
+                                           Aspect="AspectFit" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Margin="14,0,0,0"
+                                                     VerticalOptions="Center">
+                                    <Label Text="客厅分类"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           TextColor="#202020" />
+                                    <Label Text="分类介绍xxxxxxx&#x0a;xxxxxxx"
+                                           Margin="0,10,0,0"
+                                           FontSize="14"
+                                           TextColor="#A8AFBA"
+                                           LineBreakMode="WordWrap" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <!-- Right sub-card -->
+                        <Border Grid.Column="2"
+                                StrokeShape="RoundRectangle 5"
+                                Padding="20"
+                                BackgroundColor="#F6F8FC"
+                                Margin="0,10,5,0">
+                            <Grid ColumnDefinitions="122,*">
+                                <Border WidthRequest="122"
+                                        HeightRequest="92"
+                                        BackgroundColor="#E7EEF7"
+                                        StrokeShape="RoundRectangle 8"
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Center">
+                                    <Image Source="feature_category_right.png"
+                                           Aspect="AspectFit" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Margin="14,0,0,0"
+                                                     VerticalOptions="Center">
+                                    <Label Text="客厅分类"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           TextColor="#202020" />
+                                    <Label Text="分类介绍xxxxxxx&#x0a;xxxxxxx"
+                                           Margin="0,10,0,0"
+                                           FontSize="14"
+                                           TextColor="#A8AFBA"
+                                           LineBreakMode="WordWrap" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <!-- Col 3: Right Feature Cards -->
+                <Grid Grid.Column="3"
+                      RowDefinitions="1*,1*"
+                      Margin="0,0,0,20">
+
+                    <!-- 3D Preview Card -->
+                    <Grid Grid.Row="0"
+                          Margin="0,0,0,12">
+                        <Image Source="ellipse.png"
+                               Aspect="AspectFit"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Opacity="0.6" />
+                        <Image Source="home_3d_preview_bed.png"
+                               Aspect="AspectFit"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <ImageButton Source="home_enter_button.png"
+                                     Aspect="AspectFit"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="End"
+                                     Margin="0,0,10,9"
+                                     HeightRequest="50"
+                                     BackgroundColor="Transparent"
+                                     Command="{Binding NavigateTo3DShowcaseCommand}" />
+                    </Grid>
+
+                    <!-- VR Preview Card -->
+                    <Grid Grid.Row="1">
+                        <Image Source="home_vr_preview_room.png"
+                               Aspect="AspectFit"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <ImageButton Source="home_enter_button.png"
+                                     Aspect="AspectFit"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="End"
+                                     Margin="0,0,10,9"
+                                     HeightRequest="50"
+                                     BackgroundColor="Transparent"
+                                     Command="{Binding NavigateToPanoramaCommand}" />
+                    </Grid>
+                </Grid>
+
+                <!-- Col 4: Right Spacer -->
+            </Grid>
+
+            <!-- Row 3: Bottom Buttons -->
+            <Grid Grid.Row="3"
+                  ColumnDefinitions="0.063*,0.888*,0.006*,0.352*,0.066*">
+
+                <!-- Left buttons: cart, my-orders, history-orders, qr-sync -->
+                <Grid Grid.Column="1"
+                      ColumnDefinitions="0.2*,0.03*,0.2*,0.03*,0.2*,0.03*,0.2*">
+                    <ImageButton Grid.Column="0"
+                                 Source="home_cart_button.png"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End"
+                                 BackgroundColor="Transparent" />
+                    <ImageButton Grid.Column="2"
+                                 Source="home_my_orders_button.png"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End"
+                                 BackgroundColor="Transparent" />
+                    <ImageButton Grid.Column="4"
+                                 Source="home_history_orders_button.png"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End"
+                                 BackgroundColor="Transparent" />
+                    <ImageButton Grid.Column="6"
+                                 Source="home_qr_sync_button.png"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End"
+                                 BackgroundColor="Transparent" />
+                </Grid>
+
+                <!-- Right icon buttons: vr-library, effect-gallery, floorplan-library, ai-image -->
+                <Grid Grid.Column="3"
+                      ColumnDefinitions="0.25*,0.25*,0.25*,0.25*">
+                    <ImageButton Grid.Column="0"
+                                 Source="home_vr_library_button.png"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End"
+                                 BackgroundColor="Transparent"
+                                 Command="{Binding NavigateToPanoramaCommand}" />
+                    <ImageButton Grid.Column="1"
+                                 Source="home_effect_gallery_button.png"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End"
+                                 BackgroundColor="Transparent" />
+                    <ImageButton Grid.Column="2"
+                                 Source="home_floorplan_library_button.png"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End"
+                                 BackgroundColor="Transparent" />
+                    <ImageButton Grid.Column="3"
+                                 Source="home_ai_image_button.png"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End"
+                                 BackgroundColor="Transparent" />
+                </Grid>
+            </Grid>
+
+            <!-- Row 4: Bottom Spacer -->
         </Grid>
-    </ScrollView>
+    </Grid>
 
 </ContentPage>

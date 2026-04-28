@@ -24,6 +24,7 @@ public static class WebAssetExtractor
     private static readonly string[] Product3DFiles = new[]
     {
         "Web/Product3D/index.html",
+        "Web/Product3D/sofa.glb",
     };
 
     public static async Task ExtractVrHouseAsync()

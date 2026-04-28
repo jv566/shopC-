@@ -13,6 +13,7 @@ public sealed class HomePageViewModel : ObservableObject
 
     private bool _isInitialized;
     private int _currentBannerIndex;
+    private Timer? _bannerTimer;
 
     public ObservableCollection<ProductCategoryOption> Categories { get; } = [];
 
@@ -25,7 +26,7 @@ public sealed class HomePageViewModel : ObservableObject
         {
             if (SetProperty(ref _currentBannerIndex, value))
             {
-                OnPropertyChanged(nameof(CurrentBanner));
+                CurrentBanner = Banners.Count > 0 ? Banners[value] : null;
                 OnPropertyChanged(nameof(BannerIndexText));
                 OnPropertyChanged(nameof(CanSwitchBanner));
             }
@@ -54,6 +55,8 @@ public sealed class HomePageViewModel : ObservableObject
     public ICommand NavigateToProductListCommand { get; }
     public ICommand NavigateToPanoramaCommand { get; }
     public ICommand NavigateTo3DShowcaseCommand { get; }
+    public ICommand NextBannerCommand { get; }
+    public ICommand PrevBannerCommand { get; }
 
     public HomePageViewModel(
         IProductCategoryProvider categoryProvider,
@@ -74,6 +77,22 @@ public sealed class HomePageViewModel : ObservableObject
 
         NavigateToPanoramaCommand = new Command(async () => await _navigationService.GoToProductPanoramaAsync());
         NavigateTo3DShowcaseCommand = new Command(async () => await _navigationService.GoToProduct3DShowcaseAsync());
+
+        NextBannerCommand = new Command(() =>
+        {
+            if (Banners.Count > 0)
+            {
+                CurrentBannerIndex = (CurrentBannerIndex + 1) % Banners.Count;
+            }
+        });
+
+        PrevBannerCommand = new Command(() =>
+        {
+            if (Banners.Count > 0)
+            {
+                CurrentBannerIndex = (CurrentBannerIndex - 1 + Banners.Count) % Banners.Count;
+            }
+        });
     }
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
@@ -94,6 +113,35 @@ public sealed class HomePageViewModel : ObservableObject
         CurrentBannerIndex = 0;
         CurrentBanner = Banners.Count > 0 ? Banners[0] : null;
 
+        StartBannerAutoPlay();
+
         _isInitialized = true;
+    }
+
+    private void StartBannerAutoPlay()
+    {
+        _bannerTimer?.Dispose();
+        if (Banners.Count > 1)
+        {
+            _bannerTimer = new Timer(_ =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (Banners.Count > 0)
+                    {
+                        CurrentBannerIndex = (CurrentBannerIndex + 1) % Banners.Count;
+                    }
+                });
+            }, null, TimeSpan.FromSeconds(4), TimeSpan.FromSeconds(4));
+        }
+    }
+
+    private static void ReplaceCollection<T>(ObservableCollection<T> collection, IEnumerable<T> items)
+    {
+        collection.Clear();
+        foreach (var item in items)
+        {
+            collection.Add(item);
+        }
     }
 }

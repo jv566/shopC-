@@ -2,18 +2,60 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Shop.Maui.Views.PanoramaPage"
-             Title="VR 全景">
+             Title="VR 全景"
+             BackgroundColor="#0a0a1a">
 
     <Grid>
+        <!-- Loading -->
+        <VerticalStackLayout x:Name="LoadingLayout"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             Spacing="16">
+            <ActivityIndicator IsRunning="True"
+                               Color="#4CAF50"
+                               HeightRequest="48"
+                               WidthRequest="48" />
+            <Label Text="正在加载 VR 全景..."
+                   TextColor="#AAAAAA"
+                   FontSize="14"
+                   HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- WebView -->
         <WebView x:Name="PanoramaWebView"
                  HorizontalOptions="Fill"
-                 VerticalOptions="Fill" />
+                 VerticalOptions="Fill"
+                 BackgroundColor="Transparent"
+                 Navigated="OnNavigated"
+                 Navigating="OnNavigating" />
 
-        <Label Text="VR 全景加载中..."
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               IsVisible="False"
-               x:Name="LoadingLabel" />
+        <!-- Top Overlay -->
+        <Border Padding="16,12"
+                VerticalOptions="Start"
+                StrokeThickness="0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#B3000000" />
+                    <GradientStop Offset="1" Color="Transparent" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0"
+                        Text="返回"
+                        BackgroundColor="transparent"
+                        TextColor="White"
+                        FontSize="14"
+                        Padding="8,4"
+                        Clicked="OnBackClicked" />
+                <Label Grid.Column="1"
+                       Text="VR 全景展厅"
+                       FontAttributes="Bold"
+                       FontSize="16"
+                       TextColor="White"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Grid>
+        </Border>
     </Grid>
 
 </ContentPage>

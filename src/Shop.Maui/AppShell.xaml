@@ -3,11 +3,38 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:Shop.Maui.Views"
        x:Class="Shop.Maui.AppShell"
-       Title="Shop">
+       Title="Shop"
+       FlyoutBackgroundColor="#1a1a2e"
+       Shell.TabBarBackgroundColor="#1a1a2e"
+       Shell.TabBarForegroundColor="White"
+       Shell.TabBarUnselectedColor="#888888"
+       Shell.NavBarHasShadow="False"
+       Shell.NavBarIsVisible="False">
 
-    <FlyoutItem Title="首页" Icon="dotnet_bot.png">
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="160"
+              BackgroundColor="#0f0f1e">
+            <Image Source="home_title_logo.png"
+                   Aspect="AspectFit"
+                   HeightRequest="80"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="首页">
         <ShellContent ContentTemplate="{DataTemplate local:HomePage}"
                       Route="home" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="VR 全景">
+        <ShellContent ContentTemplate="{DataTemplate local:PanoramaPage}"
+                      Route="panorama" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="3D 展示">
+        <ShellContent ContentTemplate="{DataTemplate local:Showcase3DPage}"
+                      Route="showcase3d" />
     </FlyoutItem>
 
     <ShellContent Title="商品列表"
@@ -18,16 +45,6 @@
     <ShellContent Title="商品详情"
                   ContentTemplate="{DataTemplate local:ProductDetailPage}"
                   Route="productdetail"
-                  FlyoutItemIsVisible="False" />
-
-    <ShellContent Title="VR 全景"
-                  ContentTemplate="{DataTemplate local:PanoramaPage}"
-                  Route="panorama"
-                  FlyoutItemIsVisible="False" />
-
-    <ShellContent Title="3D 展示"
-                  ContentTemplate="{DataTemplate local:Showcase3DPage}"
-                  Route="showcase3d"
                   FlyoutItemIsVisible="False" />
 
 </Shell>
