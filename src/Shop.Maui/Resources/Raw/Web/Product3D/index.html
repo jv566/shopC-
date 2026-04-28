@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>汽车模型预览</title>
+
+    <script type="module"
+            src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #e6e6e6;
+            font-family: Arial, sans-serif;
+        }
+
+        .panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 999;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 460px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.15);
+        }
+
+        model-viewer {
+            width: 100vw;
+            height: 100vh;
+            background: #dcdcdc;
+        }
+
+        .ok {
+            color: green;
+        }
+
+        .err {
+            color: red;
+        }
+
+        .warn {
+            color: #cc8800;
+        }
+    </style>
+</head>
+<body>
+
+    <model-viewer id="viewer"
+                  src="/Assets/Models/sofa.glb"
+                  alt="汽车模型"
+                  camera-controls
+                  auto-rotate
+                  shadow-intensity="1"
+                  environment-image="neutral"
+                  exposure="1.2"
+                  camera-target="0m 0m 0m"
+                  camera-orbit="0deg 75deg 8m"
+                  field-of-view="30deg"
+                  interaction-prompt="none">
+    </model-viewer>
+
+    <script>
+        const status = document.getElementById('status');
+        const viewer = document.getElementById('viewer');
+
+        function add(msg, cls = '') {
+            const div = document.createElement('div');
+            div.textContent = msg;
+            if (cls) div.className = cls;
+            status.appendChild(div);
+        }
+
+        status.innerHTML = '';
+        //add('HTML 已加载', 'ok');
+        //add('当前模型路径: /Assets/Models/sofa.glb', 'warn');
+
+        //customElements.whenDefined('model-viewer')
+        //    .then(() => add('model-viewer 组件已加载', 'ok'))
+        //    .catch(() => add('model-viewer 组件加载失败', 'err'));
+
+        //fetch('/Assets/Models/sofa.glb')
+        //    .then(resp => {
+        //        add('GLB 请求状态码: ' + resp.status, resp.ok ? 'ok' : 'err');
+        //        if (!resp.ok) throw new Error('GLB 请求失败');
+        //        return resp.blob();
+        //    })
+        //    .then(blob => {
+        //        add('GLB 文件大小: ' + blob.size + ' 字节', 'ok');
+        //    })
+        //    .catch(err => {
+        //        add('GLB fetch 报错: ' + err.message, 'err');
+        //    });
+
+        //viewer.addEventListener('load', () => {
+        //    add('模型加载成功', 'ok');
+        //});
+
+        //viewer.addEventListener('error', (e) => {
+        //    add('模型加载失败: 请检查 glb 文件或路径', 'err');
+        //    console.log('model-viewer error:', e);
+        //});
+
+        //setTimeout(() => {
+        //    add('5 秒后若仍看不到模型，优先怀疑模型太大/太小/偏移/材质发黑', 'warn');
+        //}, 5000);
+    </script>
+</body>
+</html>
+
