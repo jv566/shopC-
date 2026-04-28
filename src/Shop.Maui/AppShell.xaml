@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:Shop.Maui.Views"
+       x:Class="Shop.Maui.AppShell"
+       Title="Shop">
+
+    <FlyoutItem Title="首页" Icon="dotnet_bot.png">
+        <ShellContent ContentTemplate="{DataTemplate local:HomePage}"
+                      Route="home" />
+    </FlyoutItem>
+
+    <ShellContent Title="商品列表"
+                  ContentTemplate="{DataTemplate local:ProductListPage}"
+                  Route="productlist"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Title="商品详情"
+                  ContentTemplate="{DataTemplate local:ProductDetailPage}"
+                  Route="productdetail"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Title="VR 全景"
+                  ContentTemplate="{DataTemplate local:PanoramaPage}"
+                  Route="panorama"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Title="3D 展示"
+                  ContentTemplate="{DataTemplate local:Showcase3DPage}"
+                  Route="showcase3d"
+                  FlyoutItemIsVisible="False" />
+
+</Shell>

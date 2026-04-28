@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Shop.Maui.Views.PanoramaPage"
+             Title="VR 全景">
+
+    <Grid>
+        <WebView x:Name="PanoramaWebView"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill" />
+
+        <Label Text="VR 全景加载中..."
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               IsVisible="False"
+               x:Name="LoadingLabel" />
+    </Grid>
+
+</ContentPage>

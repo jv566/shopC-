@@ -1,0 +1,29 @@
+namespace Shop.Maui.Services;
+
+public sealed class NavigationService : INavigationService
+{
+    public async Task GoToHomeAsync()
+    {
+        await Shell.Current.GoToAsync("//home");
+    }
+
+    public async Task GoToProductListAsync(string categoryId, string categoryName)
+    {
+        await Shell.Current.GoToAsync($"productlist?categoryId={Uri.EscapeDataString(categoryId)}&categoryName={Uri.EscapeDataString(categoryName)}");
+    }
+
+    public async Task GoToProductDetailAsync(string productId, string modelName, decimal salePrice, string? imageUrl)
+    {
+        await Shell.Current.GoToAsync($"productdetail?productId={Uri.EscapeDataString(productId)}&modelName={Uri.EscapeDataString(modelName)}&salePrice={salePrice}&imageUrl={Uri.EscapeDataString(imageUrl ?? string.Empty)}");
+    }
+
+    public async Task GoToProductPanoramaAsync()
+    {
+        await Shell.Current.GoToAsync("panorama");
+    }
+
+    public async Task GoToProduct3DShowcaseAsync()
+    {
+        await Shell.Current.GoToAsync("showcase3d");
+    }
+}

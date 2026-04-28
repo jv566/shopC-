@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
+             xmlns:m="clr-namespace:Shop.Maui.Models"
+             x:Class="Shop.Maui.Views.ProductListPage"
+             Title="商品列表"
+             x:DataType="vm:ProductListViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Current Category -->
+        <Label Grid.Row="0"
+               Text="{Binding CurrentCategoryText}"
+               FontAttributes="Bold"
+               FontSize="14"
+               Padding="16,12"
+               BackgroundColor="#F5F5F5" />
+
+        <!-- Category Tree Tabs -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding CategoryTree}"
+                        SelectionMode="None"
+                        HeightRequest="56">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal"
+                                   ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="m:ProductCategoryGroup">
+                    <Border Padding="12,8"
+                            Stroke="#E0E0E0"
+                            StrokeShape="RoundRectangle 16"
+                            BackgroundColor="White">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=SelectPrimaryCategoryCommand}"
+                                                  CommandParameter="{Binding PrimaryCategory}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{Binding PrimaryCategory.DisplayName}"
+                               FontSize="13"
+                               VerticalOptions="Center" />
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Product List -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Products}"
+                        SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical"
+                                 Span="2"
+                                 VerticalItemSpacing="12"
+                                 HorizontalItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="m:ProductListItem">
+                    <Border Stroke="#E0E0E0"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12"
+                            BackgroundColor="White">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=SelectProductCommand}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="6">
+                            <Image Source="{Binding ImageUrl}"
+                                   Aspect="AspectFill"
+                                   HeightRequest="120"
+                                   BackgroundColor="#F2F2F2" />
+                            <Label Text="{Binding ModelName}"
+                                   FontAttributes="Bold"
+                                   FontSize="14" />
+                            <Label Text="{Binding SalePrice, StringFormat='￥{0:F2}'}"
+                                   TextColor="#E53935"
+                                   FontSize="14" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>

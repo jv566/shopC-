@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
+             xmlns:m="clr-namespace:Shop.Maui.Models"
+             x:Class="Shop.Maui.Views.ProductDetailPage"
+             Title="商品详情"
+             x:DataType="vm:ProductDetailViewModel">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <!-- Product Image -->
+            <Border Stroke="#E0E0E0"
+                    StrokeShape="RoundRectangle 12"
+                    HeightRequest="240">
+                <Image Source="{Binding Product.ImageUrl}"
+                       Aspect="AspectFill"
+                       HorizontalOptions="Fill"
+                       VerticalOptions="Fill"
+                       BackgroundColor="#F2F2F2" />
+            </Border>
+
+            <!-- Product Info -->
+            <Label Text="{Binding ProductModelText}"
+                   FontAttributes="Bold"
+                   FontSize="20" />
+
+            <Label Text="{Binding ProductPriceText}"
+                   TextColor="#E53935"
+                   FontSize="18"
+                   FontAttributes="Bold" />
+
+            <!-- Color Options -->
+            <Label Text="颜色选择"
+                   FontAttributes="Bold"
+                   FontSize="16" />
+
+            <CollectionView ItemsSource="{Binding ColorOptions}"
+                            SelectionMode="None"
+                            HeightRequest="48">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal"
+                                       ItemSpacing="8" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="m:ProductColorImageOption">
+                        <Border Padding="12,8"
+                                Stroke="#CCCCCC"
+                                StrokeShape="RoundRectangle 16"
+                                BackgroundColor="{Binding ButtonBackgroundColor}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductDetailViewModel}}, Path=SelectColorCommand}"
+                                                      CommandParameter="{Binding Index}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{Binding ColorName}"
+                                   FontSize="13"
+                                   VerticalOptions="Center" />
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="{Binding ColorIndexText}"
+                   HorizontalOptions="Center"
+                   FontSize="12"
+                   TextColor="Gray" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
