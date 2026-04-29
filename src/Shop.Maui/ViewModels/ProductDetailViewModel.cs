@@ -13,9 +13,19 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
     public ProductListItem Product { get; private set; } = new("", "", "", 0m, null);
 
-    public string ProductModelText { get; private set; } = string.Empty;
+    private string _productModelText = string.Empty;
+    public string ProductModelText
+    {
+        get => _productModelText;
+        private set => SetProperty(ref _productModelText, value);
+    }
 
-    public string ProductPriceText { get; private set; } = string.Empty;
+    private string _productPriceText = string.Empty;
+    public string ProductPriceText
+    {
+        get => _productPriceText;
+        private set => SetProperty(ref _productPriceText, value);
+    }
 
     public ObservableCollection<ProductColorImageOption> ColorOptions { get; } = [];
 

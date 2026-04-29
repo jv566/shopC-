@@ -339,18 +339,21 @@
                                     StrokeShape="RoundRectangle 14"
                                     Padding="10,6">
                                 <HorizontalStackLayout Spacing="6">
-                                    <BoxView WidthRequest="8"
-                                             HeightRequest="8"
-                                             CornerRadius="4"
-                                             BackgroundColor="#c8a96e" />
-                                    <BoxView WidthRequest="8"
-                                             HeightRequest="8"
-                                             CornerRadius="4"
-                                             BackgroundColor="#555" />
-                                    <BoxView WidthRequest="8"
-                                             HeightRequest="8"
-                                             CornerRadius="4"
-                                             BackgroundColor="#555" />
+                                    <Border WidthRequest="8"
+                                            HeightRequest="8"
+                                            StrokeShape="RoundRectangle 4"
+                                            BackgroundColor="#c8a96e"
+                                            StrokeThickness="0" />
+                                    <Border WidthRequest="8"
+                                            HeightRequest="8"
+                                            StrokeShape="RoundRectangle 4"
+                                            BackgroundColor="#555"
+                                            StrokeThickness="0" />
+                                    <Border WidthRequest="8"
+                                            HeightRequest="8"
+                                            StrokeShape="RoundRectangle 4"
+                                            BackgroundColor="#555"
+                                            StrokeThickness="0" />
                                 </HorizontalStackLayout>
                             </Border>
                         </Grid>
