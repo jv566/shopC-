@@ -3,10 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
              xmlns:m="clr-namespace:Shop.Maui.Models"
+             xmlns:cvt="clr-namespace:Shop.Maui.Converters"
              x:Class="Shop.Maui.Views.HomePage"
              Title="Shop"
              BackgroundColor="#0a1628"
              x:DataType="vm:HomePageViewModel">
+
+    <ContentPage.Resources>
+        <cvt:BannerDotConverter x:Key="BannerDotConverter" />
+    </ContentPage.Resources>
 
     <Grid>
         <Image Source="home_page_background.png"
@@ -44,12 +49,13 @@
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
                                    HeightRequest="30" />
-                            <Image Source="keting.png"
-                                   Aspect="AspectFit"
+                            <Label Text="床"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   HeightRequest="20"
-                                   Margin="4,2,0,0" />
+                                   Margin="10,4,0,0"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
                             <Image Source="ellipse.png"
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"
@@ -73,12 +79,13 @@
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
                                    HeightRequest="30" />
-                            <Image Source="keting.png"
-                                   Aspect="AspectFit"
+                            <Label Text="沙发"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   HeightRequest="20"
-                                   Margin="4,2,0,0" />
+                                   Margin="10,4,0,0"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
                             <Image Source="ellipse.png"
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"
@@ -105,12 +112,13 @@
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
                                    HeightRequest="30" />
-                            <Image Source="keting.png"
-                                   Aspect="AspectFit"
+                            <Label Text="桌子"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   HeightRequest="20"
-                                   Margin="4,2,0,0" />
+                                   Margin="10,4,0,0"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
                             <Image Source="ellipse.png"
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"
@@ -134,12 +142,13 @@
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
                                    HeightRequest="30" />
-                            <Image Source="keting.png"
-                                   Aspect="AspectFit"
+                            <Label Text="衣柜"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   HeightRequest="20"
-                                   Margin="4,2,0,0" />
+                                   Margin="10,4,0,0"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
                             <Image Source="ellipse.png"
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"
@@ -166,12 +175,13 @@
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
                                    HeightRequest="30" />
-                            <Image Source="keting.png"
-                                   Aspect="AspectFit"
+                            <Label Text="定制柜"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   HeightRequest="20"
-                                   Margin="4,2,0,0" />
+                                   Margin="8,4,0,0"
+                                   FontSize="11"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
                             <Image Source="ellipse.png"
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"
@@ -195,12 +205,13 @@
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
                                    HeightRequest="30" />
-                            <Image Source="keting.png"
-                                   Aspect="AspectFit"
+                            <Label Text="床"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   HeightRequest="20"
-                                   Margin="4,2,0,0" />
+                                   Margin="10,4,0,0"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
                             <Image Source="ellipse.png"
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"
@@ -227,12 +238,13 @@
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
                                    HeightRequest="30" />
-                            <Image Source="keting.png"
-                                   Aspect="AspectFit"
+                            <Label Text="沙发"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   HeightRequest="20"
-                                   Margin="4,2,0,0" />
+                                   Margin="10,4,0,0"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
                             <Image Source="ellipse.png"
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"
@@ -256,12 +268,13 @@
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
                                    HeightRequest="30" />
-                            <Image Source="keting.png"
-                                   Aspect="AspectFit"
+                            <Label Text="桌子"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   HeightRequest="20"
-                                   Margin="4,2,0,0" />
+                                   Margin="10,4,0,0"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
                             <Image Source="ellipse.png"
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"
@@ -292,12 +305,11 @@
                             StrokeShape="RoundRectangle 10"
                             Margin="10,0,10,0">
                         <Grid>
-                            <Image Source="lunbotu.png"
+                            <Image Source="{Binding CurrentBanner.ImagePath}"
                                    Aspect="AspectFill"
                                    HorizontalOptions="Fill"
                                    VerticalOptions="Fill" />
 
-                            <!-- Left Arrow -->
                             <Border BackgroundColor="#80000000"
                                     StrokeShape="RoundRectangle 20"
                                     Padding="8"
@@ -314,7 +326,6 @@
                                        VerticalOptions="Center" />
                             </Border>
 
-                            <!-- Right Arrow -->
                             <Border BackgroundColor="#80000000"
                                     StrokeShape="RoundRectangle 20"
                                     Padding="8"
@@ -331,7 +342,6 @@
                                        VerticalOptions="Center" />
                             </Border>
 
-                            <!-- Indicator dots -->
                             <Border HorizontalOptions="Center"
                                     VerticalOptions="End"
                                     Margin="0,0,0,14"
@@ -342,18 +352,27 @@
                                     <Border WidthRequest="8"
                                             HeightRequest="8"
                                             StrokeShape="RoundRectangle 4"
-                                            BackgroundColor="#c8a96e"
-                                            StrokeThickness="0" />
+                                            StrokeThickness="0">
+                                        <Border.BackgroundColor>
+                                            <Binding Path="CurrentBannerIndex" Converter="{StaticResource BannerDotConverter}" ConverterParameter="0" />
+                                        </Border.BackgroundColor>
+                                    </Border>
                                     <Border WidthRequest="8"
                                             HeightRequest="8"
                                             StrokeShape="RoundRectangle 4"
-                                            BackgroundColor="#555"
-                                            StrokeThickness="0" />
+                                            StrokeThickness="0">
+                                        <Border.BackgroundColor>
+                                            <Binding Path="CurrentBannerIndex" Converter="{StaticResource BannerDotConverter}" ConverterParameter="1" />
+                                        </Border.BackgroundColor>
+                                    </Border>
                                     <Border WidthRequest="8"
                                             HeightRequest="8"
                                             StrokeShape="RoundRectangle 4"
-                                            BackgroundColor="#555"
-                                            StrokeThickness="0" />
+                                            StrokeThickness="0">
+                                        <Border.BackgroundColor>
+                                            <Binding Path="CurrentBannerIndex" Converter="{StaticResource BannerDotConverter}" ConverterParameter="2" />
+                                        </Border.BackgroundColor>
+                                    </Border>
                                 </HorizontalStackLayout>
                             </Border>
                         </Grid>
@@ -489,25 +508,29 @@
                                  Aspect="AspectFit"
                                  HorizontalOptions="Center"
                                  VerticalOptions="End"
-                                 BackgroundColor="Transparent" />
+                                 BackgroundColor="Transparent"
+                                 Command="{Binding OpenCartCommand}" />
                     <ImageButton Grid.Column="2"
                                  Source="home_my_orders_button.png"
                                  Aspect="AspectFit"
                                  HorizontalOptions="Center"
                                  VerticalOptions="End"
-                                 BackgroundColor="Transparent" />
+                                 BackgroundColor="Transparent"
+                                 Command="{Binding OpenMyOrdersCommand}" />
                     <ImageButton Grid.Column="4"
                                  Source="home_history_orders_button.png"
                                  Aspect="AspectFit"
                                  HorizontalOptions="Center"
                                  VerticalOptions="End"
-                                 BackgroundColor="Transparent" />
+                                 BackgroundColor="Transparent"
+                                 Command="{Binding OpenHistoryOrdersCommand}" />
                     <ImageButton Grid.Column="6"
                                  Source="home_qr_sync_button.png"
                                  Aspect="AspectFit"
                                  HorizontalOptions="Center"
                                  VerticalOptions="End"
-                                 BackgroundColor="Transparent" />
+                                 BackgroundColor="Transparent"
+                                 Command="{Binding SyncQrCommand}" />
                 </Grid>
 
                 <!-- Right icon buttons: vr-library, effect-gallery, floorplan-library, ai-image -->

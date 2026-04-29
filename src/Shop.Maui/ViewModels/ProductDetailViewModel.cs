@@ -8,6 +8,7 @@ namespace Shop.Maui.ViewModels;
 public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributable
 {
     private readonly IProductColorVariantProvider _colorVariantProvider;
+    private readonly IUserActionService _userActionService;
 
     private int _currentColorIndex;
 
@@ -47,11 +48,16 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
     public string ColorIndexText => ColorOptions.Count == 0 ? "0/0" : $"{CurrentColorIndex + 1}/{ColorOptions.Count}";
 
     public ICommand SelectColorCommand { get; }
+    public ICommand AddToCartCommand { get; }
+    public ICommand BuyNowCommand { get; }
 
-    public ProductDetailViewModel(IProductColorVariantProvider colorVariantProvider)
+    public ProductDetailViewModel(IProductColorVariantProvider colorVariantProvider, IUserActionService userActionService)
     {
         _colorVariantProvider = colorVariantProvider;
+        _userActionService = userActionService;
         SelectColorCommand = new Command<int>(index => SetCurrentColorIndex(index));
+        AddToCartCommand = new Command(async () => await ShowActionResultAsync(_userActionService.AddToCartAsync(Product)));
+        BuyNowCommand = new Command(async () => await ShowActionResultAsync(_userActionService.BuyNowAsync(Product)));
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -149,5 +155,14 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         }
 
         return true;
+    }
+
+    private static async Task ShowActionResultAsync(Task<UserActionResult> actionTask)
+    {
+        var result = await actionTask;
+        if (Shell.Current is not null)
+        {
+            await Shell.Current.DisplayAlert(result.Title, result.Message, "确定");
+        }
     }
 }

@@ -153,7 +153,8 @@
                                 FontAttributes="Bold"
                                 FontSize="15"
                                 CornerRadius="12"
-                                HeightRequest="52" />
+                                HeightRequest="52"
+                                Command="{Binding AddToCartCommand}" />
                         <Button Grid.Column="1"
                                 Text="立即购买"
                                 BackgroundColor="#E53935"
@@ -161,7 +162,8 @@
                                 FontAttributes="Bold"
                                 FontSize="15"
                                 CornerRadius="12"
-                                HeightRequest="52" />
+                                HeightRequest="52"
+                                Command="{Binding BuyNowCommand}" />
                     </Grid>
 
                 </VerticalStackLayout>

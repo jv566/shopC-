@@ -29,11 +29,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<IProductCategoryTreeProvider, MockProductCategoryTreeProvider>();
         builder.Services.AddSingleton<IProductProvider, MockProductProvider>();
         builder.Services.AddSingleton<IProductColorVariantProvider, MockProductColorVariantProvider>();
+        builder.Services.AddSingleton<IUserActionService, MockUserActionService>();
 
         // ViewModels
         builder.Services.AddTransient<HomePageViewModel>();
         builder.Services.AddTransient<ProductListViewModel>();
         builder.Services.AddTransient<ProductDetailViewModel>();
+        builder.Services.AddTransient<Showcase3DViewModel>();
 
         // Pages
         builder.Services.AddTransient<HomePage>();

@@ -10,6 +10,7 @@ public sealed class HomePageViewModel : ObservableObject
     private readonly IProductCategoryProvider _categoryProvider;
     private readonly IHomeCarouselProvider _carouselProvider;
     private readonly INavigationService _navigationService;
+    private readonly IUserActionService _userActionService;
 
     private bool _isInitialized;
     private int _currentBannerIndex;
@@ -56,17 +57,23 @@ public sealed class HomePageViewModel : ObservableObject
     public ICommand NavigateToCategoryByIdCommand { get; }
     public ICommand NavigateToPanoramaCommand { get; }
     public ICommand NavigateTo3DShowcaseCommand { get; }
+    public ICommand OpenCartCommand { get; }
+    public ICommand OpenMyOrdersCommand { get; }
+    public ICommand OpenHistoryOrdersCommand { get; }
+    public ICommand SyncQrCommand { get; }
     public ICommand NextBannerCommand { get; }
     public ICommand PrevBannerCommand { get; }
 
     public HomePageViewModel(
         IProductCategoryProvider categoryProvider,
         IHomeCarouselProvider carouselProvider,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        IUserActionService userActionService)
     {
         _categoryProvider = categoryProvider;
         _carouselProvider = carouselProvider;
         _navigationService = navigationService;
+        _userActionService = userActionService;
 
         NavigateToProductListCommand = new Command<ProductCategoryOption>(async category =>
         {
@@ -92,6 +99,10 @@ public sealed class HomePageViewModel : ObservableObject
 
         NavigateToPanoramaCommand = new Command(async () => await _navigationService.GoToProductPanoramaAsync());
         NavigateTo3DShowcaseCommand = new Command(async () => await _navigationService.GoToProduct3DShowcaseAsync());
+        OpenCartCommand = new Command(async () => await ShowActionResultAsync(_userActionService.GetCartSummaryAsync()));
+        OpenMyOrdersCommand = new Command(async () => await ShowActionResultAsync(_userActionService.GetMyOrdersSummaryAsync()));
+        OpenHistoryOrdersCommand = new Command(async () => await ShowActionResultAsync(_userActionService.GetHistoryOrdersSummaryAsync()));
+        SyncQrCommand = new Command(async () => await ShowActionResultAsync(_userActionService.SyncQrAsync()));
 
         NextBannerCommand = new Command(() =>
         {
@@ -157,6 +168,15 @@ public sealed class HomePageViewModel : ObservableObject
         foreach (var item in items)
         {
             collection.Add(item);
+        }
+    }
+
+    private static async Task ShowActionResultAsync(Task<UserActionResult> actionTask)
+    {
+        var result = await actionTask;
+        if (Shell.Current is not null)
+        {
+            await Shell.Current.DisplayAlert(result.Title, result.Message, "确定");
         }
     }
 }

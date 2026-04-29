@@ -1,61 +1,176 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
+             xmlns:m="clr-namespace:Shop.Maui.Models"
              x:Class="Shop.Maui.Views.Showcase3DPage"
+             x:DataType="vm:Showcase3DViewModel"
              Title="3D 展示"
-             BackgroundColor="#0a0a1a">
+             BackgroundColor="#061427">
 
     <Grid>
-        <!-- Loading -->
-        <VerticalStackLayout x:Name="LoadingLayout"
-                             HorizontalOptions="Center"
-                             VerticalOptions="Center"
-                             Spacing="16">
-            <ActivityIndicator IsRunning="True"
-                               Color="#2196F3"
-                               HeightRequest="48"
-                               WidthRequest="48" />
-            <Label Text="正在加载 3D 模型..."
-                   TextColor="#AAAAAA"
-                   FontSize="14"
-                   HorizontalOptions="Center" />
-        </VerticalStackLayout>
+        <Image Source="product3dshowcasebackground.png"
+               Aspect="AspectFill"
+               HorizontalOptions="Fill"
+               VerticalOptions="Fill" />
 
-        <!-- WebView -->
-        <WebView x:Name="ShowcaseWebView"
-                 HorizontalOptions="Fill"
-                 VerticalOptions="Fill"
-                 BackgroundColor="Transparent"
-                 Navigated="OnNavigated"
-                 Navigating="OnNavigating" />
+        <Grid Padding="30,24,30,24"
+              ColumnDefinitions="82,300,*"
+              RowDefinitions="Auto,*">
 
-        <!-- Top Overlay -->
-        <Border Padding="16,12"
-                VerticalOptions="Start"
-                StrokeThickness="0">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Offset="0" Color="#B3000000" />
-                    <GradientStop Offset="1" Color="Transparent" />
-                </LinearGradientBrush>
-            </Border.Background>
-            <Grid ColumnDefinitions="Auto,*,Auto">
-                <Button Grid.Column="0"
-                        Text="返回"
-                        BackgroundColor="transparent"
-                        TextColor="White"
-                        FontSize="14"
-                        Padding="8,4"
-                        Clicked="OnBackClicked" />
-                <Label Grid.Column="1"
-                       Text="3D 模型展示"
-                       FontAttributes="Bold"
-                       FontSize="16"
-                       TextColor="White"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center" />
-            </Grid>
-        </Border>
+            <Button Grid.Row="0"
+                    Grid.Column="0"
+                    Text="返回"
+                    WidthRequest="68"
+                    HeightRequest="40"
+                    BackgroundColor="#660B2346"
+                    BorderColor="#4DE1FF"
+                    BorderWidth="1"
+                    CornerRadius="10"
+                    TextColor="White"
+                    FontSize="14"
+                    Clicked="OnBackClicked" />
+
+            <Label Grid.Row="0"
+                   Grid.Column="1"
+                   Grid.ColumnSpan="2"
+                   Margin="12,6,0,0"
+                   Text="3D 商品展示"
+                   FontAttributes="Bold"
+                   FontSize="22"
+                   TextColor="White" />
+
+            <CollectionView Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="0,18,12,0"
+                            ItemsSource="{Binding Categories}"
+                            SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical"
+                                       ItemSpacing="18" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="m:ShowcaseCategoryItem">
+                        <Border Padding="8"
+                                Stroke="{Binding BorderColor}"
+                                BackgroundColor="{Binding BackgroundColor}"
+                                StrokeShape="RoundRectangle 14"
+                                HeightRequest="84">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:Showcase3DViewModel}}, Path=SelectCategoryCommand}"
+                                                      CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="6"
+                                                 HorizontalOptions="Center"
+                                                 VerticalOptions="Center">
+                                <Image Source="category_chair_icon.png"
+                                       HeightRequest="28"
+                                       WidthRequest="28"
+                                       Aspect="AspectFit" />
+                                <Label Text="{Binding DisplayName}"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="{Binding TextColor}"
+                                       HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Border Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="0,18,14,0"
+                    Padding="12"
+                    BackgroundColor="#133763"
+                    Stroke="#356AA0"
+                    StrokeShape="RoundRectangle 16">
+                <CollectionView ItemsSource="{Binding Thumbnails}"
+                                SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical"
+                                         Span="2"
+                                         VerticalItemSpacing="10"
+                                         HorizontalItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:ShowcaseProductThumbnail">
+                            <Border Padding="6"
+                                    BackgroundColor="{Binding BackgroundColor}"
+                                    Stroke="{Binding BorderColor}"
+                                    StrokeShape="RoundRectangle 12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:Showcase3DViewModel}}, Path=SelectThumbnailCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Image Source="{Binding ImageSource}"
+                                       Aspect="AspectFit"
+                                       HeightRequest="92"
+                                       WidthRequest="120" />
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+
+            <Border Grid.Row="1"
+                    Grid.Column="2"
+                    Margin="0,18,0,0"
+                    Padding="0"
+                    BackgroundColor="#F5F7FA"
+                    Stroke="#D9E5F2"
+                    StrokeShape="RoundRectangle 18">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <Border Margin="0"
+                            Padding="16,10"
+                            HorizontalOptions="Start"
+                            BackgroundColor="#A9C7EE"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 18,0,12,0">
+                        <Label Text="3D"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+                    </Border>
+
+                    <Image Grid.Row="1"
+                           Source="{Binding SelectedProductImageSource}"
+                           Aspect="AspectFit"
+                           Margin="36,20,36,20" />
+
+                    <Grid Grid.Row="2"
+                          Padding="24,0,24,22"
+                          ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Spacing="4"
+                                             VerticalOptions="End">
+                            <Label Text="{Binding SelectedCategoryName}"
+                                   FontSize="14"
+                                   TextColor="#7C8CA0" />
+                            <Label Text="{Binding SelectedProductName}"
+                                   FontSize="22"
+                                   FontAttributes="Bold"
+                                   TextColor="#202020" />
+                            <Label Text="{Binding SelectedProductPriceText}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="#E4572E" />
+                        </VerticalStackLayout>
+
+                        <ImageButton Grid.Column="1"
+                                     Source="home_cart_button.png"
+                                     HeightRequest="68"
+                                     WidthRequest="68"
+                                     Margin="12,0,0,0"
+                                     BackgroundColor="#D5E7F8"
+                                     CornerRadius="14"
+                                     Padding="10"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="End"
+                                     Command="{Binding AddToCartCommand}" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 
 </ContentPage>
