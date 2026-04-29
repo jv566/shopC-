@@ -1,8 +1,8 @@
 namespace Shop.Maui.Views;
 
-public partial class ProductListPage : ContentPage
+public partial class Image2CategoryPage : ContentPage
 {
-    public ProductListPage(ViewModels.ProductListViewModel viewModel)
+    public Image2CategoryPage(ViewModels.ProductListViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;

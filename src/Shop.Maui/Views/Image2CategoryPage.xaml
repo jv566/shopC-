@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
+             xmlns:m="clr-namespace:Shop.Maui.Models"
+             x:Class="Shop.Maui.Views.Image2CategoryPage"
+             x:Name="PageRoot"
+             x:DataType="vm:ProductListViewModel"
+             Title="分类展示"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#071629">
+
+    <Grid>
+        <AbsoluteLayout HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        WidthRequest="1360"
+                        HeightRequest="760">
+
+            <!-- 整体科技边框背景图 -->
+            <Image Source="home_page_background.png"
+                   Aspect="Fill"
+                   AbsoluteLayout.LayoutBounds="0,0,1360,760"
+                   AbsoluteLayout.LayoutFlags="None" />
+
+            <!-- 主内容区域 -->
+            <Grid AbsoluteLayout.LayoutBounds="60,70,1240,620"
+                  AbsoluteLayout.LayoutFlags="None"
+                  ColumnDefinitions="280,*"
+                  ColumnSpacing="28">
+
+                <!-- 左侧菜单区域 -->
+                <Grid Grid.Column="0"
+                      RowDefinitions="285,18,*">
+
+                    <!-- 左侧上方面板背景 -->
+                    <Grid Grid.Row="0">
+
+                        <Image Source="image2/card_panel.png"
+                               Aspect="Fill" />
+
+                        <Grid Padding="18,18,18,16"
+                              RowDefinitions="72,14,*">
+
+                            <!-- 当前选中的一级分类 -->
+                            <Grid Grid.Row="0">
+
+                                <Image Source="image2/menu_item_selected.png"
+                                       Aspect="Fill" />
+
+                                <Grid Padding="18,0"
+                                      ColumnDefinitions="56,*"
+                                      ColumnSpacing="14">
+
+                                    <!-- 当前分类图标：这里先固定用 table active，你要根据分类动态换也可以后面再改 -->
+                                    <Image Grid.Column="0"
+                                           Source="image2/menu_icon_table_active.png"
+                                           WidthRequest="40"
+                                           HeightRequest="40"
+                                           Aspect="AspectFit"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+
+                                    <Label Grid.Column="1"
+                                           Text="{Binding SelectedPrimaryMenu.DisplayName}"
+                                           TextColor="White"
+                                           FontSize="24"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center" />
+                                </Grid>
+
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectPrimaryCategoryCommand}"
+                                        CommandParameter="{Binding SelectedPrimaryMenu.Group.PrimaryCategory}" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+
+                            <!-- 二级分类 -->
+                            <CollectionView Grid.Row="2"
+                                            ItemsSource="{Binding SecondaryMenus}"
+                                            SelectionMode="None"
+                                            VerticalScrollBarVisibility="Never">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Vertical"
+                                                       ItemSpacing="0" />
+                                </CollectionView.ItemsLayout>
+
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="m:ProductListSecondaryMenuItem">
+                                        <Grid RowDefinitions="46,1"
+                                              Padding="8,0">
+
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectSecondaryCategoryCommand}"
+                                                    CommandParameter="{Binding Category}" />
+                                            </Grid.GestureRecognizers>
+
+                                            <Label Grid.Row="0"
+                                                   Text="{Binding DisplayName}"
+                                                   TextColor="{Binding TextColor}"
+                                                   FontSize="20"
+                                                   HorizontalTextAlignment="Center"
+                                                   VerticalTextAlignment="Center"
+                                                   VerticalOptions="Center" />
+
+                                            <Image Grid.Row="1"
+                                                   Source="image2/menu_divider.png"
+                                                   Aspect="Fill"
+                                                   HeightRequest="1"
+                                                   HorizontalOptions="Fill" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Grid>
+                    </Grid>
+
+                    <!-- 其他一级分类 -->
+                    <CollectionView Grid.Row="2"
+                                    ItemsSource="{Binding OtherPrimaryMenus}"
+                                    SelectionMode="None"
+                                    VerticalScrollBarVisibility="Never">
+
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical"
+                                               ItemSpacing="18" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="m:ProductListPrimaryMenuItem">
+                                <Grid HeightRequest="82">
+
+                                    <Image Source="image2/menu_item_selected.png"
+                                           Aspect="Fill"
+                                           Opacity="0.75" />
+
+                                    <Grid Padding="18,0"
+                                          ColumnDefinitions="56,*"
+                                          ColumnSpacing="14">
+
+                                        <!-- 其他分类图标：这里仍使用你原来的绑定 -->
+                                        <Image Grid.Column="0"
+                                               Source="{Binding IconSource}"
+                                               WidthRequest="40"
+                                               HeightRequest="40"
+                                               Aspect="AspectFit"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+
+                                        <Label Grid.Column="1"
+                                               Text="{Binding DisplayName}"
+                                               TextColor="White"
+                                               FontSize="22"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectPrimaryCategoryCommand}"
+                                            CommandParameter="{Binding Group.PrimaryCategory}" />
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+
+                <!-- 右侧商品区 -->
+                <CollectionView Grid.Column="1"
+                                ItemsSource="{Binding DisplayProducts}"
+                                SelectionMode="None"
+                                VerticalScrollBarVisibility="Never"
+                                HorizontalScrollBarVisibility="Never">
+
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical"
+                                         Span="3"
+                                         HorizontalItemSpacing="28"
+                                         VerticalItemSpacing="28" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:ProductListDisplayItem">
+
+                            <Grid WidthRequest="300"
+                                  HeightRequest="245">
+
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectProductCommand}"
+                                        CommandParameter="{Binding Product}" />
+                                </Grid.GestureRecognizers>
+
+                                <!-- 卡片阴影 -->
+                                <Image Source="image2/card_shadow.png"
+                                       Aspect="Fill"
+                                       Opacity="0.9" />
+
+                                <!-- 卡片面板 -->
+                                <Image Source="image2/card_panel.png"
+                                       Aspect="Fill" />
+
+                                <Grid Padding="12,12,12,12"
+                                      RowDefinitions="176,*">
+
+                                    <!-- 商品图片 -->
+                                    <Image Grid.Row="0"
+                                           Source="image2/product_bed.png"
+                                           Aspect="AspectFill"
+                                           HorizontalOptions="Fill"
+                                           VerticalOptions="Fill" />
+
+                                    <!-- 如果你的绑定图片暂时为空，可以先测试写死这一句 -->
+                                    
+                                    <Image Grid.Row="0"
+                                           Source="image2/product_bed.png"
+                                           Aspect="AspectFill"
+                                           HorizontalOptions="Fill"
+                                           VerticalOptions="Fill" />
+                                   
+
+                                    <!-- 底部型号和价格 -->
+                                    <Grid Grid.Row="1"
+                                          Margin="0,10,0,0"
+                                          ColumnDefinitions="Auto,*,Auto"
+                                          VerticalOptions="Center">
+
+                                        <!-- 型号标签背景 -->
+                                        <Grid Grid.Column="0"
+                                              ColumnDefinitions="Auto,Auto"
+                                              VerticalOptions="Center">
+
+                                            <Image Grid.Column="0"
+                                                   Source="image2/label_model.png"
+                                                   HeightRequest="26"
+                                                   Aspect="AspectFit"
+                                                   VerticalOptions="Center" />
+
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding DisplayModelText}"
+                                                   TextColor="White"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   Margin="4,0,0,0"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+
+                                        <BoxView Grid.Column="1"
+                                                 Color="Transparent" />
+
+                                        <!-- 价格标签背景 -->
+                                        <Grid Grid.Column="2"
+                                              ColumnDefinitions="Auto,Auto"
+                                              VerticalOptions="Center">
+
+                                            <Image Grid.Column="0"
+                                                   Source="image2/label_price.png"
+                                                   HeightRequest="24"
+                                                   Aspect="AspectFit"
+                                                   VerticalOptions="Center" />
+
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding DisplayPriceText}"
+                                                   TextColor="#18E8FF"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   Margin="4,0,0,0"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </AbsoluteLayout>
+    </Grid>
+</ContentPage>

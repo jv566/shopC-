@@ -4,7 +4,7 @@ public interface INavigationService
 {
     Task GoToHomeAsync();
 
-    Task GoToProductListAsync(string categoryId, string categoryName);
+    Task GoToCategoryWallAsync(string categoryId, string categoryName);
 
     Task GoToProductDetailAsync(string productId, string modelName, decimal salePrice, string? imageUrl);
 

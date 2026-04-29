@@ -39,7 +39,7 @@ public static class MauiProgram
 
         // Pages
         builder.Services.AddTransient<HomePage>();
-        builder.Services.AddTransient<ProductListPage>();
+        builder.Services.AddTransient<Image2CategoryPage>();
         builder.Services.AddTransient<ProductDetailPage>();
         builder.Services.AddTransient<PanoramaPage>();
         builder.Services.AddTransient<Showcase3DPage>();

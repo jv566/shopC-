@@ -7,18 +7,29 @@ namespace Shop.Maui.ViewModels;
 
 public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 {
+    private const string BedImageSource = "image2/product_bed.png";
+    private const string DefaultImageSource = "image2/product_bed.png";
+
     private readonly IProductProvider _productProvider;
     private readonly IProductCategoryTreeProvider _categoryTreeProvider;
     private readonly INavigationService _navigationService;
 
     private string _currentCategoryText = string.Empty;
     private string? _activePrimaryId;
+    private string? _activeSecondaryId;
     private ProductCategoryOption? _entryCategory;
+    private ProductListPrimaryMenuItem? _selectedPrimaryMenu;
     private bool _isInitialized;
 
     public ObservableCollection<ProductCategoryGroup> CategoryTree { get; } = [];
 
-    public ObservableCollection<ProductListItem> Products { get; } = [];
+    public ObservableCollection<ProductListPrimaryMenuItem> PrimaryMenus { get; } = [];
+
+    public ObservableCollection<ProductListPrimaryMenuItem> OtherPrimaryMenus { get; } = [];
+
+    public ObservableCollection<ProductListSecondaryMenuItem> SecondaryMenus { get; } = [];
+
+    public ObservableCollection<ProductListDisplayItem> DisplayProducts { get; } = [];
 
     public string CurrentCategoryText
     {
@@ -30,6 +41,18 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     {
         get => _activePrimaryId;
         set => SetProperty(ref _activePrimaryId, value);
+    }
+
+    public string? ActiveSecondaryId
+    {
+        get => _activeSecondaryId;
+        set => SetProperty(ref _activeSecondaryId, value);
+    }
+
+    public ProductListPrimaryMenuItem? SelectedPrimaryMenu
+    {
+        get => _selectedPrimaryMenu;
+        private set => SetProperty(ref _selectedPrimaryMenu, value);
     }
 
     public ICommand SelectPrimaryCategoryCommand { get; }
@@ -91,10 +114,12 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
         if (_entryCategory is null)
         {
-            ReplaceCollection(Products, Array.Empty<ProductListItem>());
+            ReplaceCollection(DisplayProducts, Array.Empty<ProductListDisplayItem>());
             _isInitialized = true;
             return;
         }
+
+        ReplaceCollection(PrimaryMenus, CategoryTree.Select(group => new ProductListPrimaryMenuItem(group)));
 
         var resolvedGroup = ProductCategoryCatalog.ResolvePrimaryGroup(_entryCategory.Id)
             ?? ProductCategoryCatalog.ResolvePrimaryGroup(_entryCategory.DisplayName);
@@ -105,17 +130,17 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
         if (targetGroup is null)
         {
-            ReplaceCollection(Products, Array.Empty<ProductListItem>());
+            ReplaceCollection(DisplayProducts, Array.Empty<ProductListDisplayItem>());
             _isInitialized = true;
             return;
         }
-
-        ActivePrimaryId = targetGroup.PrimaryCategory.Id;
 
         var matchedSecondary = targetGroup.SecondaryCategories.FirstOrDefault(s => IsEntryMatch(s.Id) || IsEntryMatch(s.DisplayName));
 
         if (matchedSecondary is not null)
         {
+            SetPrimarySelection(targetGroup.PrimaryCategory.Id);
+            RefreshSecondaryMenus(targetGroup.SecondaryCategories, matchedSecondary.Id);
             await SelectSecondaryCategoryAsync(matchedSecondary, cancellationToken);
             _isInitialized = true;
             return;
@@ -129,17 +154,35 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     public async Task SelectPrimaryCategoryAsync(ProductCategoryOption primaryCategory, CancellationToken cancellationToken = default)
     {
         CurrentCategoryText = $"当前分类：{primaryCategory.DisplayName}（全部）";
+        ActivePrimaryId = primaryCategory.Id;
+        ActiveSecondaryId = null;
+
+        SetPrimarySelection(primaryCategory.Id);
+
+        var targetGroup = CategoryTree.FirstOrDefault(g => string.Equals(g.PrimaryCategory.Id, primaryCategory.Id, StringComparison.OrdinalIgnoreCase));
+        RefreshSecondaryMenus(targetGroup?.SecondaryCategories ?? Array.Empty<ProductCategoryOption>(), null);
 
         var products = await _productProvider.GetProductsAsync(primaryCategory.Id, cancellationToken);
-        ReplaceCollection(Products, products);
+        ReplaceCollection(DisplayProducts, BuildDisplayProducts(products, primaryCategory.Id));
     }
 
     public async Task SelectSecondaryCategoryAsync(ProductCategoryOption secondaryCategory, CancellationToken cancellationToken = default)
     {
         CurrentCategoryText = $"当前分类：{secondaryCategory.DisplayName}";
+        ActiveSecondaryId = secondaryCategory.Id;
+
+        var targetGroup = CategoryTree.FirstOrDefault(g =>
+            g.SecondaryCategories.Any(s => string.Equals(s.Id, secondaryCategory.Id, StringComparison.OrdinalIgnoreCase)));
+
+        if (targetGroup is not null)
+        {
+            ActivePrimaryId = targetGroup.PrimaryCategory.Id;
+            SetPrimarySelection(targetGroup.PrimaryCategory.Id);
+            RefreshSecondaryMenus(targetGroup.SecondaryCategories, secondaryCategory.Id);
+        }
 
         var products = await _productProvider.GetProductsAsync(secondaryCategory.Id, cancellationToken);
-        ReplaceCollection(Products, products);
+        ReplaceCollection(DisplayProducts, BuildDisplayProducts(products, ActivePrimaryId));
     }
 
     private bool IsEntryMatch(string candidate)
@@ -151,5 +194,80 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
         return string.Equals(candidate, _entryCategory.Id, StringComparison.OrdinalIgnoreCase)
             || string.Equals(candidate, _entryCategory.DisplayName, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void SetPrimarySelection(string? primaryId)
+    {
+        ProductListPrimaryMenuItem? selected = null;
+        foreach (var menu in PrimaryMenus)
+        {
+            var isSelected = string.Equals(menu.Id, primaryId, StringComparison.OrdinalIgnoreCase);
+            menu.IsSelected = isSelected;
+            if (isSelected)
+            {
+                selected = menu;
+            }
+        }
+
+        SelectedPrimaryMenu = selected;
+        ReplaceCollection(OtherPrimaryMenus, PrimaryMenus.Where(menu => !ReferenceEquals(menu, selected)));
+    }
+
+    private void RefreshSecondaryMenus(IEnumerable<ProductCategoryOption> secondaryCategories, string? selectedSecondaryId)
+    {
+        var items = secondaryCategories.Select(category =>
+        {
+            var item = new ProductListSecondaryMenuItem(category)
+            {
+                IsSelected = string.Equals(category.Id, selectedSecondaryId, StringComparison.OrdinalIgnoreCase)
+            };
+            return item;
+        });
+
+        ReplaceCollection(SecondaryMenus, items);
+    }
+
+    private static IReadOnlyList<ProductListDisplayItem> BuildDisplayProducts(IEnumerable<ProductListItem> products, string? primaryCategoryId)
+    {
+        var source = products.ToList();
+        if (source.Count == 0)
+        {
+            return Array.Empty<ProductListDisplayItem>();
+        }
+
+        var result = new List<ProductListDisplayItem>();
+        for (var i = 0; i < 6; i++)
+        {
+            var product = source[i % source.Count];
+            result.Add(new ProductListDisplayItem(
+                product,
+                ResolveImageSource(primaryCategoryId, product),
+                $"￥{product.SalePrice:F0}",
+                BuildDisplayModelText(product),
+                "image2/label_model.png",
+                "image2/label_price.png",
+                "image2/card_panel.png"));
+        }
+
+        return result;
+    }
+
+    private static string ResolveImageSource(string? primaryCategoryId, ProductListItem product)
+    {
+        if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+        {
+            return product.ImageUrl;
+        }
+
+        return string.Equals(primaryCategoryId, ProductCategoryCatalog.PrimaryIds.Bed, StringComparison.OrdinalIgnoreCase)
+            ? BedImageSource
+            : DefaultImageSource;
+    }
+
+    private static string BuildDisplayModelText(ProductListItem product)
+    {
+        return product.ModelName.StartsWith("型号", StringComparison.OrdinalIgnoreCase)
+            ? product.ModelName
+            : $"型号{product.ModelName}";
     }
 }

@@ -7,9 +7,9 @@ public sealed class NavigationService : INavigationService
         await Shell.Current.GoToAsync("//home");
     }
 
-    public async Task GoToProductListAsync(string categoryId, string categoryName)
+    public async Task GoToCategoryWallAsync(string categoryId, string categoryName)
     {
-        await Shell.Current.GoToAsync($"productlist?categoryId={Uri.EscapeDataString(categoryId)}&categoryName={Uri.EscapeDataString(categoryName)}");
+        await Shell.Current.GoToAsync($"image2category?categoryId={Uri.EscapeDataString(categoryId)}&categoryName={Uri.EscapeDataString(categoryName)}");
     }
 
     public async Task GoToProductDetailAsync(string productId, string modelName, decimal salePrice, string? imageUrl)
