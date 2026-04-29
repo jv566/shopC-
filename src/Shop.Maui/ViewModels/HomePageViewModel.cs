@@ -53,6 +53,7 @@ public sealed class HomePageViewModel : ObservableObject
     public bool CanSwitchBanner => Banners.Count > 1;
 
     public ICommand NavigateToProductListCommand { get; }
+    public ICommand NavigateToCategoryByIdCommand { get; }
     public ICommand NavigateToPanoramaCommand { get; }
     public ICommand NavigateTo3DShowcaseCommand { get; }
     public ICommand NextBannerCommand { get; }
@@ -72,6 +73,20 @@ public sealed class HomePageViewModel : ObservableObject
             if (category is not null)
             {
                 await _navigationService.GoToProductListAsync(category.Id, category.DisplayName);
+            }
+        });
+
+        NavigateToCategoryByIdCommand = new Command<string>(async categoryId =>
+        {
+            if (string.IsNullOrWhiteSpace(categoryId)) return;
+            var category = Categories.FirstOrDefault(c => string.Equals(c.Id, categoryId, StringComparison.OrdinalIgnoreCase));
+            if (category is not null)
+            {
+                await _navigationService.GoToProductListAsync(category.Id, category.DisplayName);
+            }
+            else
+            {
+                await _navigationService.GoToProductListAsync(categoryId, categoryId);
             }
         });
 

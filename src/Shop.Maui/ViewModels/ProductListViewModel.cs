@@ -14,6 +14,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     private string _currentCategoryText = string.Empty;
     private string? _activePrimaryId;
     private ProductCategoryOption? _entryCategory;
+    private bool _isInitialized;
 
     public ObservableCollection<ProductCategoryGroup> CategoryTree { get; } = [];
 
@@ -83,12 +84,15 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
+        if (_isInitialized) return;
+
         var categoryTree = await _categoryTreeProvider.GetCategoryTreeAsync(cancellationToken);
         ReplaceCollection(CategoryTree, categoryTree);
 
         if (_entryCategory is null)
         {
             ReplaceCollection(Products, Array.Empty<ProductListItem>());
+            _isInitialized = true;
             return;
         }
 
@@ -102,6 +106,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         if (targetGroup is null)
         {
             ReplaceCollection(Products, Array.Empty<ProductListItem>());
+            _isInitialized = true;
             return;
         }
 
@@ -112,10 +117,13 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         if (matchedSecondary is not null)
         {
             await SelectSecondaryCategoryAsync(matchedSecondary, cancellationToken);
+            _isInitialized = true;
             return;
         }
 
         await SelectPrimaryCategoryAsync(targetGroup.PrimaryCategory, cancellationToken);
+
+        _isInitialized = true;
     }
 
     public async Task SelectPrimaryCategoryAsync(ProductCategoryOption primaryCategory, CancellationToken cancellationToken = default)

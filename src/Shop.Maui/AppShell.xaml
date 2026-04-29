@@ -37,14 +37,6 @@
                       Route="showcase3d" />
     </FlyoutItem>
 
-    <ShellContent Title="商品列表"
-                  ContentTemplate="{DataTemplate local:ProductListPage}"
-                  Route="productlist"
-                  FlyoutItemIsVisible="False" />
 
-    <ShellContent Title="商品详情"
-                  ContentTemplate="{DataTemplate local:ProductDetailPage}"
-                  Route="productdetail"
-                  FlyoutItemIsVisible="False" />
 
 </Shell>

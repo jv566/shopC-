@@ -63,7 +63,9 @@
                                          HeightRequest="50"
                                          WidthRequest="50"
                                          BackgroundColor="Transparent"
-                                         Padding="0" />
+                                         Padding="0"
+                                         Command="{Binding NavigateToCategoryByIdCommand}"
+                                         CommandParameter="bed" />
                         </Grid>
                         <Grid Grid.Column="2">
                             <Image Source="category_badge_background.png"
@@ -90,7 +92,9 @@
                                          HeightRequest="50"
                                          WidthRequest="50"
                                          BackgroundColor="Transparent"
-                                         Padding="0" />
+                                         Padding="0"
+                                         Command="{Binding NavigateToCategoryByIdCommand}"
+                                         CommandParameter="sofa" />
                         </Grid>
                     </Grid>
                     <!-- Row 2 -->
@@ -120,7 +124,9 @@
                                          HeightRequest="50"
                                          WidthRequest="50"
                                          BackgroundColor="Transparent"
-                                         Padding="0" />
+                                         Padding="0"
+                                         Command="{Binding NavigateToCategoryByIdCommand}"
+                                         CommandParameter="table" />
                         </Grid>
                         <Grid Grid.Column="2">
                             <Image Source="category_badge_background.png"
@@ -147,7 +153,9 @@
                                          HeightRequest="50"
                                          WidthRequest="50"
                                          BackgroundColor="Transparent"
-                                         Padding="0" />
+                                         Padding="0"
+                                         Command="{Binding NavigateToCategoryByIdCommand}"
+                                         CommandParameter="wardrobe" />
                         </Grid>
                     </Grid>
                     <!-- Row 4 -->
@@ -177,7 +185,9 @@
                                          HeightRequest="50"
                                          WidthRequest="50"
                                          BackgroundColor="Transparent"
-                                         Padding="0" />
+                                         Padding="0"
+                                         Command="{Binding NavigateToCategoryByIdCommand}"
+                                         CommandParameter="custom" />
                         </Grid>
                         <Grid Grid.Column="2">
                             <Image Source="category_badge_background.png"
@@ -204,7 +214,9 @@
                                          HeightRequest="50"
                                          WidthRequest="50"
                                          BackgroundColor="Transparent"
-                                         Padding="0" />
+                                         Padding="0"
+                                         Command="{Binding NavigateToCategoryByIdCommand}"
+                                         CommandParameter="bed" />
                         </Grid>
                     </Grid>
                     <!-- Row 6 -->
@@ -234,7 +246,9 @@
                                          HeightRequest="50"
                                          WidthRequest="50"
                                          BackgroundColor="Transparent"
-                                         Padding="0" />
+                                         Padding="0"
+                                         Command="{Binding NavigateToCategoryByIdCommand}"
+                                         CommandParameter="sofa" />
                         </Grid>
                         <Grid Grid.Column="2">
                             <Image Source="category_badge_background.png"
@@ -261,7 +275,9 @@
                                          HeightRequest="50"
                                          WidthRequest="50"
                                          BackgroundColor="Transparent"
-                                         Padding="0" />
+                                         Padding="0"
+                                         Command="{Binding NavigateToCategoryByIdCommand}"
+                                         CommandParameter="table" />
                         </Grid>
                     </Grid>
                 </Grid>
