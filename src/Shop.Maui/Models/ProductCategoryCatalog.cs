@@ -6,7 +6,9 @@ public static class ProductCategoryCatalog
 {
     public static class PrimaryIds
     {
-        public const string Bed = "bed";
+        public const string Bed = "bed"; 
+
+
         public const string Sofa = "sofa";
         public const string Table = "table";
         public const string Wardrobe = "wardrobe";
