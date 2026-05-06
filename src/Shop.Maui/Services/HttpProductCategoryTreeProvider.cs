@@ -21,6 +21,8 @@ public sealed class HttpProductCategoryTreeProvider : IProductCategoryTreeProvid
         PropertyNameCaseInsensitive = true
     };
 
+
+
     // HttpClient 用来发送 HTTP 请求
     private readonly HttpClient _httpClient = new();
 

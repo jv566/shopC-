@@ -71,10 +71,10 @@ public static class MauiProgram
             IProductCategoryTreeProvider,
             HttpProductCategoryTreeProvider>();
 
-        // 注册商品服务（模拟数据）
+        // 注册商品服务（真实 HTTP 请求）
         builder.Services.AddSingleton<
             IProductProvider,
-            MockProductProvider>();
+            HttpProductProvider>();
 
         // 注册商品颜色服务
         builder.Services.AddSingleton<

@@ -444,21 +444,10 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
             return Array.Empty<ProductListDisplayItem>();
         }
 
-        var result = new List<ProductListDisplayItem>();
+        var result = new List<ProductListDisplayItem>(source.Count);
 
-        // 固定生成 6 个展示项
-        // 如果商品不足 6 个，就循环重复显示
-        for (var i = 0; i < 6; i++)
+        foreach (var product in source)
         {
-            // i % source.Count：
-            // 假设 source.Count 是 2
-            // i=0 => 0
-            // i=1 => 1
-            // i=2 => 0
-            // i=3 => 1
-            // 这样可以循环取商品
-            var product = source[i % source.Count];
-
             // 创建展示商品对象
             result.Add(new ProductListDisplayItem(
                 product,

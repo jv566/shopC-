@@ -14,6 +14,5 @@ public interface IProductCategoryTreeProvider
     Task<IReadOnlyList<ProductCategoryGroup>> GetCategoryTreeAsync(
         CancellationToken cancellationToken = default);
     //cancellationToken这个参数是用来“取消任务”的。
-
     //比如请求后端接口时，页面关闭了，就可以取消请求
 }
