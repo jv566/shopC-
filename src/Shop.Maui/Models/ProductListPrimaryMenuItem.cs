@@ -46,21 +46,21 @@ public sealed class ProductListPrimaryMenuItem : INotifyPropertyChanged
 
     public Color TextColor => Colors.White;
 
-    public string BackgroundImageSource => IsSelected ? "image2/menu_item_selected.png" : "image2/menu_panel.png";
+    public string BackgroundImageSource => IsSelected ? "menu_item_selected.png" : "menu_panel.png";
 
     public string IconSource => (Id, IsSelected) switch
     {
-        ("bed", true) => "image2/menu_icon_bed_active.png",
-        ("bed", false) => "image2/menu_icon_bed_white.png",
-        ("sofa", true) => "image2/menu_icon_sofa_active.png",
-        ("sofa", false) => "image2/menu_icon_sofa_white.png",
-        ("table", true) => "image2/menu_icon_table_active.png",
-        ("table", false) => "image2/menu_icon_table_white.png",
-        ("wardrobe", true) => "image2/menu_icon_wardrobe_active.png",
-        ("wardrobe", false) => "image2/menu_icon_wardrobe_white.png",
-        ("custom", true) => "image2/menu_icon_custom_active.png",
-        ("custom", false) => "image2/menu_icon_custom_white.png",
-        _ => "image2/menu_icon_bed_white.png"
+        ("bed", true) => "menu_icon_bed_active.png",
+        ("bed", false) => "menu_icon_bed_white.png",
+        ("sofa", true) => "menu_icon_sofa_active.png",
+        ("sofa", false) => "menu_icon_sofa_white.png",
+        ("table", true) => "menu_icon_table_active.png",
+        ("table", false) => "menu_icon_table_white.png",
+        ("wardrobe", true) => "menu_icon_wardrobe_active.png",
+        ("wardrobe", false) => "menu_icon_wardrobe_white.png",
+        ("custom", true) => "menu_icon_custom_active.png",
+        ("custom", false) => "menu_icon_custom_white.png",
+        _ => "menu_icon_bed_white.png"
     };
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -7,8 +7,8 @@ namespace Shop.Maui.ViewModels;
 
 public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 {
-    private const string BedImageSource = "image2/product_bed.png";
-    private const string DefaultImageSource = "image2/product_bed.png";
+    private const string BedImageSource = "product_bed.png";
+    private const string DefaultImageSource = "product_bed.png";
 
     private readonly IProductProvider _productProvider;
     private readonly IProductCategoryTreeProvider _categoryTreeProvider;
@@ -244,9 +244,9 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
                 ResolveImageSource(primaryCategoryId, product),
                 $"￥{product.SalePrice:F0}",
                 BuildDisplayModelText(product),
-                "image2/label_model.png",
-                "image2/label_price.png",
-                "image2/card_panel.png"));
+                "label_model.png",
+                "label_price.png",
+                "card_panel.png"));
         }
 
         return result;
