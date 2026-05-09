@@ -76,6 +76,10 @@ public static class MauiProgram
             IProductProvider,
             HttpProductProvider>();
 
+        builder.Services.AddSingleton<
+            IImageCacheService,
+            FileImageCacheService>();
+
         // 注册商品颜色服务
         builder.Services.AddSingleton<
             IProductColorVariantProvider,

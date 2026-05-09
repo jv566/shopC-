@@ -25,6 +25,8 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     // 导航服务：负责页面跳转，比如跳到商品详情页
     private readonly INavigationService _navigationService;
 
+    private readonly IImageCacheService _imageCacheService;
+
     // 当前页面顶部/标题显示的分类文字
     private string _currentCategoryText = string.Empty;
 
@@ -107,11 +109,13 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     public ProductListViewModel(
         IProductProvider productProvider,
         IProductCategoryTreeProvider categoryTreeProvider,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        IImageCacheService imageCacheService)
     {
         _productProvider = productProvider;
         _categoryTreeProvider = categoryTreeProvider;
         _navigationService = navigationService;
+        _imageCacheService = imageCacheService;
 
         // 一级分类点击命令
         SelectPrimaryCategoryCommand = new Command<ProductCategoryOption>(async primary =>
@@ -257,9 +261,6 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         // 当前一级分类 id
         ActivePrimaryId = primaryCategory.Id;
 
-        // 一级分类被选中时，二级分类清空
-        ActiveSecondaryId = null;
-
         // 设置左侧一级菜单选中状态
         SetPrimarySelection(primaryCategory.Id);
 
@@ -270,11 +271,21 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
                 primaryCategory.Id,
                 StringComparison.OrdinalIgnoreCase));
 
+        var defaultSecondary = targetGroup?.SecondaryCategories.FirstOrDefault();
+        if (defaultSecondary is not null)
+        {
+            RefreshSecondaryMenus(targetGroup!.SecondaryCategories, defaultSecondary.Id);
+            await SelectSecondaryCategoryAsync(defaultSecondary, cancellationToken);
+            return;
+        }
+
         // 刷新二级菜单
         // 如果找不到对应组，就显示空二级菜单
         RefreshSecondaryMenus(
             targetGroup?.SecondaryCategories ?? Array.Empty<ProductCategoryOption>(),
             null);
+
+        ActiveSecondaryId = null;
 
         // 根据一级分类 id 获取商品
         var products = await _productProvider.GetProductsAsync(
@@ -284,7 +295,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         // 构建商品展示卡片，并刷新页面商品列表
         ReplaceCollection(
             DisplayProducts,
-            BuildDisplayProducts(products, primaryCategory.Id));
+            await BuildDisplayProductsAsync(products, primaryCategory.Id, cancellationToken));
     }
 
     // 选择二级分类
@@ -329,7 +340,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         // 构建商品展示卡片
         ReplaceCollection(
             DisplayProducts,
-            BuildDisplayProducts(products, ActivePrimaryId));
+            await BuildDisplayProductsAsync(products, ActivePrimaryId, cancellationToken));
     }
 
     // 判断入口分类是否和某个候选值匹配
@@ -431,9 +442,10 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     }
 
     // 构建页面展示用的商品卡片列表
-    private static IReadOnlyList<ProductListDisplayItem> BuildDisplayProducts(
+    private async Task<IReadOnlyList<ProductListDisplayItem>> BuildDisplayProductsAsync(
         IEnumerable<ProductListItem> products,
-        string? primaryCategoryId)
+        string? primaryCategoryId,
+        CancellationToken cancellationToken)
     {
         // 先转成 List，避免重复枚举
         var source = products.ToList();
@@ -444,19 +456,26 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
             return Array.Empty<ProductListDisplayItem>();
         }
 
+        var imageSources = await Task.WhenAll(source.Select(product =>
+            _imageCacheService.GetCachedImageSourceAsync(
+                ResolveImageSource(primaryCategoryId, product),
+                cancellationToken)));
+
         var result = new List<ProductListDisplayItem>(source.Count);
 
-        foreach (var product in source)
+        for (var index = 0; index < source.Count; index++)
         {
+            var product = source[index];
+
             // 创建展示商品对象
             result.Add(new ProductListDisplayItem(
                 product,
 
                 // 解析商品图片
-                ResolveImageSource(primaryCategoryId, product),
+                imageSources[index],
 
                 // 价格文本，比如 ￥1999
-                $"￥{product.SalePrice:F0}",
+                $"￥ {product.SalePrice:F0}",
 
                 // 型号文本
                 BuildDisplayModelText(product),
@@ -499,10 +518,24 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     // 构建型号显示文本
     private static string BuildDisplayModelText(ProductListItem product)
     {
-        // 如果 ModelName 已经以“型号”开头，就直接返回
-        // 否则前面加上“型号”
-        return product.ModelName.StartsWith("型号", StringComparison.OrdinalIgnoreCase)
-            ? product.ModelName
-            : $"型号{product.ModelName}";
+        var modelName = product.ModelName.Trim();
+
+        if (modelName.StartsWith("型号", StringComparison.OrdinalIgnoreCase))
+        {
+            modelName = modelName["型号".Length..].Trim();
+        }
+
+        var categoryEndIndex = modelName.IndexOf('】');
+        if (modelName.StartsWith('【') && categoryEndIndex >= 0 && categoryEndIndex + 1 < modelName.Length)
+        {
+            modelName = modelName[(categoryEndIndex + 1)..].Trim();
+        }
+
+        if (string.IsNullOrWhiteSpace(modelName))
+        {
+            modelName = "AAAA";
+        }
+
+        return $"型号{modelName}";
     }
 }
