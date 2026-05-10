@@ -442,7 +442,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     }
 
     // 构建页面展示用的商品卡片列表
-    private async Task<IReadOnlyList<ProductListDisplayItem>> BuildDisplayProductsAsync(
+    private Task<IReadOnlyList<ProductListDisplayItem>> BuildDisplayProductsAsync(
         IEnumerable<ProductListItem> products,
         string? primaryCategoryId,
         CancellationToken cancellationToken)
@@ -453,26 +453,21 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         // 如果没有商品，返回空数组
         if (source.Count == 0)
         {
-            return Array.Empty<ProductListDisplayItem>();
+            return Task.FromResult<IReadOnlyList<ProductListDisplayItem>>(Array.Empty<ProductListDisplayItem>());
         }
-
-        var imageSources = await Task.WhenAll(source.Select(product =>
-            _imageCacheService.GetCachedImageSourceAsync(
-                ResolveImageSource(primaryCategoryId, product),
-                cancellationToken)));
 
         var result = new List<ProductListDisplayItem>(source.Count);
 
-        for (var index = 0; index < source.Count; index++)
+        foreach (var product in source)
         {
-            var product = source[index];
+            var resolvedImageSource = ResolveImageSource(primaryCategoryId, product);
 
             // 创建展示商品对象
             result.Add(new ProductListDisplayItem(
                 product,
 
                 // 解析商品图片
-                imageSources[index],
+                _imageCacheService.GetBestImageSource(resolvedImageSource),
 
                 // 价格文本，比如 ￥1999
                 $"￥ {product.SalePrice:F0}",
@@ -490,7 +485,57 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
                 "card_panel.png"));
         }
 
-        return result;
+        _ = RefreshCachedImagesAsync(result, primaryCategoryId, cancellationToken);
+
+        return Task.FromResult<IReadOnlyList<ProductListDisplayItem>>(result);
+    }
+
+    private async Task RefreshCachedImagesAsync(
+        IReadOnlyList<ProductListDisplayItem> items,
+        string? primaryCategoryId,
+        CancellationToken cancellationToken)
+    {
+        using var throttler = new SemaphoreSlim(4);
+
+        var tasks = items.Select(async item =>
+        {
+            await throttler.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            try
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                var resolvedImageSource = ResolveImageSource(primaryCategoryId, item.Product);
+                var cachedImageSource = await _imageCacheService
+                    .GetCachedImageSourceAsync(resolvedImageSource, cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (cachedImageSource == item.ImageSource)
+                {
+                    return;
+                }
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    item.ImageSource = cachedImageSource;
+                });
+            }
+            finally
+            {
+                throttler.Release();
+            }
+        });
+
+        try
+        {
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     // 解析商品图片

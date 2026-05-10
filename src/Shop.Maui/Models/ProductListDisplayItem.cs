@@ -1,10 +1,61 @@
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
 namespace Shop.Maui.Models;
 
-public sealed record ProductListDisplayItem(
-    ProductListItem Product,
-    string ImageSource,
-    string DisplayPriceText,
-    string DisplayModelText,
-    string ModelLabelImageSource,
-    string PriceLabelImageSource,
-    string CardBackgroundImageSource);
+public sealed class ProductListDisplayItem : INotifyPropertyChanged
+{
+    private string _imageSource;
+
+    public ProductListDisplayItem(
+        ProductListItem product,
+        string imageSource,
+        string displayPriceText,
+        string displayModelText,
+        string modelLabelImageSource,
+        string priceLabelImageSource,
+        string cardBackgroundImageSource)
+    {
+        Product = product;
+        _imageSource = imageSource;
+        DisplayPriceText = displayPriceText;
+        DisplayModelText = displayModelText;
+        ModelLabelImageSource = modelLabelImageSource;
+        PriceLabelImageSource = priceLabelImageSource;
+        CardBackgroundImageSource = cardBackgroundImageSource;
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public ProductListItem Product { get; }
+
+    public string ImageSource
+    {
+        get => _imageSource;
+        set
+        {
+            if (_imageSource == value)
+            {
+                return;
+            }
+
+            _imageSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DisplayPriceText { get; }
+
+    public string DisplayModelText { get; }
+
+    public string ModelLabelImageSource { get; }
+
+    public string PriceLabelImageSource { get; }
+
+    public string CardBackgroundImageSource { get; }
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}

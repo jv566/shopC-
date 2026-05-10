@@ -31,78 +31,8 @@
                     <Image Source="menu_panel.png"
                            Aspect="Fill" />
 
-                    <Grid Padding="20,34,20,54"
-                          RowDefinitions="100,62,50,10,50,10,50,34,100,30,100,30,100,30,100">
-
-                        <Grid Grid.Row="0">
-                            <Image Source="{Binding SelectedPrimaryMenu.BackgroundImageSource}"
-                                   Aspect="Fill" />
-
-                            <Grid Padding="28,0"
-                                  ColumnDefinitions="112,*">
-                                <Image Grid.Column="0"
-                                       Source="{Binding SelectedPrimaryMenu.IconSource}"
-                                       WidthRequest="75"
-                                       HeightRequest="60"
-                                       Aspect="AspectFit"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-
-                                <Label Grid.Column="1"
-                                       Text="{Binding SelectedPrimaryMenu.DisplayName}"
-                                       TextColor="White"
-                                       FontSize="34"
-                                       FontAttributes="Bold"
-                                       HorizontalTextAlignment="Center"
-                                       VerticalTextAlignment="Center" />
-                            </Grid>
-
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectPrimaryCategoryCommand}"
-                                    CommandParameter="{Binding SelectedPrimaryMenu.Group.PrimaryCategory}" />
-                            </Grid.GestureRecognizers>
-                        </Grid>
-
-                        <CollectionView Grid.Row="2"
-                                        Grid.RowSpan="5"
-                                        ItemsSource="{Binding SecondaryMenus}"
-                                        SelectionMode="None"
-                                        VerticalScrollBarVisibility="Never">
-                            <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Vertical"
-                                                   ItemSpacing="0" />
-                            </CollectionView.ItemsLayout>
-
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="m:ProductListSecondaryMenuItem">
-                                    <Grid RowDefinitions="50,10"
-                                          Padding="42,0">
-                                        <Grid.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectSecondaryCategoryCommand}"
-                                                CommandParameter="{Binding Category}" />
-                                        </Grid.GestureRecognizers>
-
-                                        <Label Grid.Row="0"
-                                               Text="{Binding DisplayName}"
-                                               TextColor="{Binding TextColor}"
-                                               FontSize="34"
-                                               HorizontalTextAlignment="Center"
-                                               VerticalTextAlignment="Center" />
-
-                                        <Image Grid.Row="1"
-                                               Source="menu_divider.png"
-                                               Aspect="Fill"
-                                               Opacity="0.75" />
-                                    </Grid>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-
-                        <CollectionView Grid.Row="8"
-                                        Grid.RowSpan="7"
-                                        ItemsSource="{Binding OtherPrimaryMenus}"
+                    <Grid Padding="20,34,20,54">
+                        <CollectionView ItemsSource="{Binding PrimaryMenus}"
                                         SelectionMode="None"
                                         VerticalScrollBarVisibility="Never">
                             <CollectionView.ItemsLayout>
@@ -112,36 +42,74 @@
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="m:ProductListPrimaryMenuItem">
-                                    <Grid HeightRequest="100">
-                                        <Image Source="{Binding BackgroundImageSource}"
-                                               Aspect="Fill"
-                                               Opacity="0.92" />
+                                    <VerticalStackLayout Spacing="0">
+                                        <Grid HeightRequest="100">
+                                            <Image Source="{Binding BackgroundImageSource}"
+                                                   Aspect="Fill"
+                                                   Opacity="0.92" />
 
-                                        <Grid Padding="28,0"
-                                              ColumnDefinitions="112,*">
-                                            <Image Grid.Column="0"
-                                                   Source="{Binding IconSource}"
-                                                   WidthRequest="75"
-                                                   HeightRequest="60"
-                                                   Aspect="AspectFit"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center" />
+                                            <Grid Padding="28,0"
+                                                  ColumnDefinitions="112,*">
+                                                <Image Grid.Column="0"
+                                                       Source="{Binding IconSource}"
+                                                       WidthRequest="75"
+                                                       HeightRequest="60"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center" />
 
-                                            <Label Grid.Column="1"
-                                                   Text="{Binding DisplayName}"
-                                                   TextColor="{Binding TextColor}"
-                                                   FontSize="34"
-                                                   FontAttributes="Bold"
-                                                   HorizontalTextAlignment="Center"
-                                                   VerticalTextAlignment="Center" />
+                                                <Label Grid.Column="1"
+                                                       Text="{Binding DisplayName}"
+                                                       TextColor="{Binding TextColor}"
+                                                       FontSize="34"
+                                                       FontAttributes="Bold"
+                                                       HorizontalTextAlignment="Center"
+                                                       VerticalTextAlignment="Center" />
+                                            </Grid>
+
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectPrimaryCategoryCommand}"
+                                                    CommandParameter="{Binding Group.PrimaryCategory}" />
+                                            </Grid.GestureRecognizers>
                                         </Grid>
 
-                                        <Grid.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectPrimaryCategoryCommand}"
-                                                CommandParameter="{Binding Group.PrimaryCategory}" />
-                                        </Grid.GestureRecognizers>
-                                    </Grid>
+                                        <CollectionView ItemsSource="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SecondaryMenus}"
+                                                        IsVisible="{Binding IsSelected}"
+                                                        SelectionMode="None"
+                                                        VerticalScrollBarVisibility="Never"
+                                                        Margin="0,10,0,0">
+                                            <CollectionView.ItemsLayout>
+                                                <LinearItemsLayout Orientation="Vertical"
+                                                                   ItemSpacing="0" />
+                                            </CollectionView.ItemsLayout>
+
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate x:DataType="m:ProductListSecondaryMenuItem">
+                                                    <Grid RowDefinitions="50,10"
+                                                          Padding="42,0">
+                                                        <Grid.GestureRecognizers>
+                                                            <TapGestureRecognizer
+                                                                Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectSecondaryCategoryCommand}"
+                                                                CommandParameter="{Binding Category}" />
+                                                        </Grid.GestureRecognizers>
+
+                                                        <Label Grid.Row="0"
+                                                               Text="{Binding DisplayName}"
+                                                               TextColor="{Binding TextColor}"
+                                                               FontSize="34"
+                                                               HorizontalTextAlignment="Center"
+                                                               VerticalTextAlignment="Center" />
+
+                                                        <Image Grid.Row="1"
+                                                               Source="menu_divider.png"
+                                                               Aspect="Fill"
+                                                               Opacity="0.75" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+                                    </VerticalStackLayout>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
@@ -175,53 +143,72 @@
                                         CommandParameter="{Binding Product}" />
                                 </Grid.GestureRecognizers>
 
-                                <Image Source="card_panel.png"
-                                       Aspect="Fill" />
+                                <Border StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 8">
+                                    <Border.Shadow>
+                                        <Shadow Brush="#020B1B"
+                                                Offset="0,8"
+                                                Radius="18"
+                                                Opacity="0.28" />
+                                    </Border.Shadow>
 
-                                <Grid Padding="20"
-                                      RowDefinitions="320,*"
-                                      RowSpacing="10">
-                                    <Border Grid.Row="0"
-                                            WidthRequest="366"
-                                            HeightRequest="320"
-                                            StrokeThickness="0"
-                                            StrokeShape="RoundRectangle 8"
-                                            HorizontalOptions="Center"
-                                            VerticalOptions="Start">
-                                        <Image Source="{Binding ImageSource}"
-                                               Aspect="AspectFill"
-                                               WidthRequest="366"
-                                               HeightRequest="320"
-                                               HorizontalOptions="Fill"
-                                               VerticalOptions="Fill" />
-                                    </Border>
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0"
+                                                             EndPoint="0,1">
+                                            <GradientStop Color="#4D7FB9"
+                                                          Offset="0.00" />
+                                            <GradientStop Color="#315F98"
+                                                          Offset="0.58" />
+                                            <GradientStop Color="#24456F"
+                                                          Offset="1.00" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
 
-                                    <AbsoluteLayout Grid.Row="1"
-                                                    Margin="8,0,8,0"
-                                                    HeightRequest="56"
-                                                    VerticalOptions="Start">
-                                        <Label AbsoluteLayout.LayoutBounds="0,0,214,56"
-                                               AbsoluteLayout.LayoutFlags="None"
-                                               Text="{Binding DisplayModelText}"
-                                               TextColor="White"
-                                               FontSize="26"
-                                               FontAttributes="Bold"
-                                               LineBreakMode="TailTruncation"
-                                               MaxLines="1"
-                                               VerticalTextAlignment="Center" />
+                                    <Grid Padding="20"
+                                          RowDefinitions="320,*"
+                                          RowSpacing="10">
+                                        <Border Grid.Row="0"
+                                                WidthRequest="366"
+                                                HeightRequest="320"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 8"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Start">
+                                            <Image Source="{Binding ImageSource}"
+                                                   Aspect="AspectFill"
+                                                   WidthRequest="366"
+                                                   HeightRequest="320"
+                                                   HorizontalOptions="Fill"
+                                                   VerticalOptions="Fill" />
+                                        </Border>
 
-                                        <Label AbsoluteLayout.LayoutBounds="222,0,136,56"
-                                               AbsoluteLayout.LayoutFlags="None"
-                                               Text="{Binding DisplayPriceText}"
-                                               TextColor="#18F7FF"
-                                               FontSize="26"
-                                               FontAttributes="Bold"
-                                               LineBreakMode="TailTruncation"
-                                               MaxLines="1"
-                                               HorizontalTextAlignment="End"
-                                               VerticalTextAlignment="Center" />
-                                    </AbsoluteLayout>
-                                </Grid>
+                                        <AbsoluteLayout Grid.Row="1"
+                                                        Margin="8,0,8,0"
+                                                        HeightRequest="56"
+                                                        VerticalOptions="Start">
+                                            <Label AbsoluteLayout.LayoutBounds="0,0,220,56"
+                                                   AbsoluteLayout.LayoutFlags="None"
+                                                   Text="{Binding DisplayModelText}"
+                                                   TextColor="White"
+                                                   FontSize="28"
+                                                   FontAttributes="Bold"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="1"
+                                                   VerticalTextAlignment="Center" />
+
+                                            <Label AbsoluteLayout.LayoutBounds="222,0,136,56"
+                                                   AbsoluteLayout.LayoutFlags="None"
+                                                   Text="{Binding DisplayPriceText}"
+                                                   TextColor="#18F7FF"
+                                                   FontSize="30"
+                                                   FontAttributes="Bold"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="1"
+                                                   HorizontalTextAlignment="End"
+                                                   VerticalTextAlignment="Center" />
+                                        </AbsoluteLayout>
+                                    </Grid>
+                                </Border>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

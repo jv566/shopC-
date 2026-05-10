@@ -13,7 +13,7 @@ public sealed class HttpProductCategoryTreeProvider : IProductCategoryTreeProvid
     private const string CategoryTreeUrl =
         "http://www.ruanzi.net/jy/go/we.aspx?ituid=121&itjid=12102&itcid=12102";
 
-    // JSON 解析配置
+    // JSON 解析配置选项，发挥作用要放进 JsonSerializer.DeserializeAsync
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         // 属性名大小写不敏感
@@ -26,13 +26,17 @@ public sealed class HttpProductCategoryTreeProvider : IProductCategoryTreeProvid
     // HttpClient 用来发送 HTTP 请求
     private readonly HttpClient _httpClient = new();
 
+
+
     // 获取分类树
     public async Task<IReadOnlyList<ProductCategoryGroup>> GetCategoryTreeAsync(
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default)      
+// 如果调用者不传 cancellationToken，就使用默认值。
     {
         try
         {
-            // 发送 GET 请求
+            // 发送 GET 请求，using代码使用后释放内存，避免内存泄漏
+            
             using var response = await _httpClient.GetAsync(
                 CategoryTreeUrl,
                 cancellationToken);
@@ -99,6 +103,7 @@ public sealed class HttpProductCategoryTreeProvider : IProductCategoryTreeProvid
     }
 
     // 把接口里的分类对象转换成项目内部的 ProductCategoryOption
+    // 问号的意思是可能返回 null
     private static ProductCategoryOption? BuildOption(CategoryTreeItem item)
     {
         // 如果接口返回的 id 或 text 为空，就认为这个分类无效

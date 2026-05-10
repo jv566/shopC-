@@ -22,12 +22,24 @@ public sealed class FileImageCacheService : IImageCacheService
         Timeout = TimeSpan.FromSeconds(20)
     };
 
+    public string GetBestImageSource(string imageSource)
+    {
+        if (!TryCreateRemoteUri(imageSource, out var uri))
+        {
+            return imageSource;
+        }
+
+        var cachePath = BuildCachePath(imageSource, uri);
+        return File.Exists(cachePath) && new FileInfo(cachePath).Length > 0
+            ? cachePath
+            : imageSource;
+    }
+
     public Task<string> GetCachedImageSourceAsync(
         string imageSource,
         CancellationToken cancellationToken = default)
     {
-        if (!Uri.TryCreate(imageSource, UriKind.Absolute, out var uri)
-            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+        if (!TryCreateRemoteUri(imageSource, out var uri))
         {
             return Task.FromResult(imageSource);
         }
@@ -115,5 +127,11 @@ public sealed class FileImageCacheService : IImageCacheService
     {
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(value));
         return Convert.ToHexString(bytes).ToLowerInvariant();
+    }
+
+    private static bool TryCreateRemoteUri(string imageSource, out Uri uri)
+    {
+        return Uri.TryCreate(imageSource, UriKind.Absolute, out uri!)
+            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
     }
 }
