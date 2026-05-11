@@ -11,7 +11,9 @@
              BackgroundColor="#071629">
 
     <Grid x:Name="Viewport"
+        
           SizeChanged="OnViewportSizeChanged">
+
         <Grid x:Name="DesignRoot"
               HorizontalOptions="Start"
               VerticalOptions="Start"
@@ -23,27 +25,39 @@
             <Image Source="Assets/Images/首页2=2 1.png"
                    Aspect="Fill" />
 
+
+
             <AbsoluteLayout WidthRequest="1920"
                             HeightRequest="1080">
 
+
+                <!-- 左侧菜单区 -->
                 <Grid AbsoluteLayout.LayoutBounds="117,96,369,890"
                       AbsoluteLayout.LayoutFlags="None">
+                      
                     <Image Source="menu_panel.png"
                            Aspect="Fill" />
 
                     <Grid Padding="20,34,20,54">
+
+                        <!-- 去 ViewModel 里找 PrimaryMenus 这个集合
+                            然后把集合里的每一项显示出来，不要默认的选中效果，不要滚动条 -->
                         <CollectionView ItemsSource="{Binding PrimaryMenus}"
                                         SelectionMode="None"
                                         VerticalScrollBarVisibility="Never">
                             <CollectionView.ItemsLayout>
+                                
                                 <LinearItemsLayout Orientation="Vertical"
                                                    ItemSpacing="30" />
                             </CollectionView.ItemsLayout>
 
+
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="m:ProductListPrimaryMenuItem">
+
                                     <VerticalStackLayout Spacing="0">
                                         <Grid HeightRequest="100">
+                                            
                                             <Image Source="{Binding BackgroundImageSource}"
                                                    Aspect="Fill"
                                                    Opacity="0.92" />

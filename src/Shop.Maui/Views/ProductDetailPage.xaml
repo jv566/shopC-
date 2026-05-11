@@ -4,172 +4,280 @@
              xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
              xmlns:m="clr-namespace:Shop.Maui.Models"
              x:Class="Shop.Maui.Views.ProductDetailPage"
+             x:Name="PageRoot"
              Title="商品详情"
-             BackgroundColor="#f5f5f5"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#071629"
              x:DataType="vm:ProductDetailViewModel">
 
-    <ScrollView>
-        <VerticalStackLayout Spacing="0">
+    <Grid x:Name="Viewport"
+          SizeChanged="OnViewportSizeChanged">
+        <Grid x:Name="DesignRoot"
+              HorizontalOptions="Start"
+              VerticalOptions="Start"
+              WidthRequest="1920"
+              HeightRequest="1080"
+              AnchorX="0"
+              AnchorY="0">
 
-            <!-- Product Image Header -->
-            <Grid HeightRequest="300">
-                <Image Source="sofa_preview.png"
-                       Aspect="AspectFill"
-                       HorizontalOptions="Fill"
-                       VerticalOptions="Fill" />
-                <Border Padding="20,16"
-                        VerticalOptions="End"
-                        BackgroundColor="#80000000">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="{Binding ProductModelText}"
-                               FontAttributes="Bold"
-                               FontSize="22"
-                               TextColor="White" />
-                        <Label Text="{Binding ProductPriceText}"
-                               TextColor="#FFD700"
-                               FontSize="20"
-                               FontAttributes="Bold" />
-                    </VerticalStackLayout>
-                </Border>
-            </Grid>
+            <Image Source="Assets/Images/首页2=2 1.png"
+                   Aspect="Fill" />
 
-            <!-- Content Card -->
-            <Border BackgroundColor="White"
-                    StrokeThickness="0"
-                    StrokeShape="RoundRectangle 24"
-                    Margin="0,-20,0,0"
-                    Padding="20,24">
+            <AbsoluteLayout WidthRequest="1920"
+                            HeightRequest="1080">
 
-                <VerticalStackLayout Spacing="20">
+                <Button AbsoluteLayout.LayoutBounds="116,84,164,58"
+                        AbsoluteLayout.LayoutFlags="None"
+                        Text="返回"
+                        FontSize="24"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        BackgroundColor="#315F98"
+                        BorderColor="#18F7FF"
+                        BorderWidth="1"
+                        CornerRadius="8"
+                        Clicked="OnBackClicked" />
 
-                    <!-- Color Selection -->
-                    <VerticalStackLayout Spacing="12">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0"
-                                   Text="颜色选择"
-                                   FontAttributes="Bold"
-                                   FontSize="18"
-                                   TextColor="#333" />
-                            <Label Grid.Column="1"
-                                   Text="{Binding ColorIndexText}"
-                                   FontSize="14"
-                                   TextColor="#999"
-                                   VerticalOptions="Center" />
-                        </Grid>
+                <Border AbsoluteLayout.LayoutBounds="116,172,1688,812"
+                        AbsoluteLayout.LayoutFlags="None"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 8">
+                    <Border.Shadow>
+                        <Shadow Brush="#020B1B"
+                                Offset="0,10"
+                                Radius="22"
+                                Opacity="0.36" />
+                    </Border.Shadow>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="0,1">
+                            <GradientStop Color="#4D7FB9"
+                                          Offset="0.00" />
+                            <GradientStop Color="#315F98"
+                                          Offset="0.56" />
+                            <GradientStop Color="#24456F"
+                                          Offset="1.00" />
+                        </LinearGradientBrush>
+                    </Border.Background>
 
-                        <CollectionView ItemsSource="{Binding ColorOptions}"
-                                        SelectionMode="None"
-                                        HeightRequest="52">
-                            <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal"
-                                                   ItemSpacing="10" />
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="m:ProductColorImageOption">
-                                    <Border Padding="14,10"
-                                            Stroke="#2196F3"
-                                            StrokeShape="RoundRectangle 20"
-                                            BackgroundColor="{Binding ButtonBackgroundColor}">
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductDetailViewModel}}, Path=SelectColorCommand}"
-                                                                  CommandParameter="{Binding Index}" />
-                                        </Border.GestureRecognizers>
-                                        <Label Text="{Binding ColorName}"
-                                               FontSize="13"
+                    <Grid Padding="34"
+                          ColumnDefinitions="760,*"
+                          ColumnSpacing="44">
+
+                        <Border Grid.Column="0"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#EAF4FF">
+                            <Grid>
+                                <Image Source="{Binding ProductImageSource}"
+                                       Aspect="AspectFill"
+                                       HorizontalOptions="Fill"
+                                       VerticalOptions="Fill" />
+
+                                <Border HeightRequest="96"
+                                        Padding="28,0"
+                                        VerticalOptions="End"
+                                        BackgroundColor="#B0071629"
+                                        StrokeThickness="0">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="24">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding ProductCodeText}"
+                                               TextColor="White"
+                                               FontSize="32"
                                                FontAttributes="Bold"
-                                               TextColor="#333"
-                                               VerticalOptions="Center" />
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </VerticalStackLayout>
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="1"
+                                               VerticalTextAlignment="Center" />
 
-                    <!-- Divider -->
-                    <Border HeightRequest="1"
-                            BackgroundColor="#e0e0e0"
-                            StrokeThickness="0" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding ProductPriceText}"
+                                               TextColor="#18F7FF"
+                                               FontSize="36"
+                                               FontAttributes="Bold"
+                                               VerticalTextAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
 
-                    <!-- Product Info -->
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="商品信息"
-                               FontAttributes="Bold"
-                               FontSize="18"
-                               TextColor="#333" />
+                        <Grid Grid.Column="1"
+                              RowDefinitions="Auto,Auto,*,Auto"
+                              RowSpacing="28">
 
-                        <Grid ColumnDefinitions="Auto,*"
-                              RowDefinitions="Auto,Auto,Auto"
-                              RowSpacing="10"
-                              ColumnSpacing="12">
-                            <Label Grid.Row="0"
-                                   Grid.Column="0"
-                                   Text="型号"
-                                   FontSize="14"
-                                   TextColor="#666" />
-                            <Label Grid.Row="0"
-                                   Grid.Column="1"
-                                   Text="{Binding ProductModelText}"
-                                   FontSize="14"
-                                   TextColor="#333"
-                                   FontAttributes="Bold" />
+                            <VerticalStackLayout Grid.Row="0"
+                                                 Spacing="14">
+                                <Label Text="{Binding ProductModelText}"
+                                       TextColor="White"
+                                       FontSize="42"
+                                       FontAttributes="Bold"
+                                       LineBreakMode="WordWrap"
+                                       MaxLines="2" />
 
-                            <Label Grid.Row="1"
-                                   Grid.Column="0"
-                                   Text="价格"
-                                   FontSize="14"
-                                   TextColor="#666" />
-                            <Label Grid.Row="1"
-                                   Grid.Column="1"
-                                   Text="{Binding ProductPriceText}"
-                                   FontSize="14"
-                                   TextColor="#E53935"
-                                   FontAttributes="Bold" />
+                                <Grid ColumnDefinitions="Auto,Auto"
+                                      ColumnSpacing="18">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding ProductPriceText}"
+                                           TextColor="#18F7FF"
+                                           FontSize="48"
+                                           FontAttributes="Bold" />
 
-                            <Label Grid.Row="2"
-                                   Grid.Column="0"
-                                   Text="编号"
-                                   FontSize="14"
-                                   TextColor="#666" />
-                            <Label Grid.Row="2"
-                                   Grid.Column="1"
-                                   Text="{Binding Product.Id}"
-                                   FontSize="14"
-                                   TextColor="#333" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding ProductOriginalPriceText}"
+                                           TextColor="#B8D6F5"
+                                           FontSize="24"
+                                           TextDecorations="Strikethrough"
+                                           VerticalTextAlignment="End" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <Border Grid.Row="1"
+                                    HeightRequest="1"
+                                    BackgroundColor="#55B8D6F5"
+                                    StrokeThickness="0" />
+
+                            <Grid Grid.Row="2"
+                                  RowDefinitions="Auto,Auto,*"
+                                  RowSpacing="18">
+                                <Grid Grid.Row="0"
+                                      ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0"
+                                           Text="颜色选择"
+                                           TextColor="White"
+                                           FontSize="28"
+                                           FontAttributes="Bold" />
+
+                                    <Label Grid.Column="1"
+                                           Text="{Binding ColorIndexText}"
+                                           TextColor="#B8D6F5"
+                                           FontSize="22"
+                                           VerticalTextAlignment="Center" />
+                                </Grid>
+
+                                <CollectionView Grid.Row="1"
+                                                ItemsSource="{Binding ColorOptions}"
+                                                SelectionMode="None"
+                                                HeightRequest="76"
+                                                HorizontalScrollBarVisibility="Never">
+                                    <CollectionView.ItemsLayout>
+                                        <LinearItemsLayout Orientation="Horizontal"
+                                                           ItemSpacing="14" />
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="m:ProductColorImageOption">
+                                            <Border WidthRequest="152"
+                                                    HeightRequest="58"
+                                                    Stroke="#18F7FF"
+                                                    StrokeThickness="{Binding ButtonBorderWidth}"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    BackgroundColor="{Binding ButtonBackgroundColor}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SelectColorCommand}"
+                                                                          CommandParameter="{Binding Index}" />
+                                                </Border.GestureRecognizers>
+                                                <Label Text="{Binding ColorName}"
+                                                       FontSize="20"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#0B2442"
+                                                       HorizontalTextAlignment="Center"
+                                                       VerticalTextAlignment="Center"
+                                                       LineBreakMode="TailTruncation"
+                                                       MaxLines="1" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                                <Border Grid.Row="2"
+                                        Padding="26"
+                                        Stroke="#3B73AA"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 8"
+                                        BackgroundColor="#66132642">
+                                    <Grid RowDefinitions="Auto,Auto,Auto,*"
+                                          ColumnDefinitions="128,*"
+                                          RowSpacing="18"
+                                          ColumnSpacing="22">
+                                        <Label Grid.Row="0"
+                                               Grid.Column="0"
+                                               Text="编号"
+                                               TextColor="#B8D6F5"
+                                               FontSize="24" />
+                                        <Label Grid.Row="0"
+                                               Grid.Column="1"
+                                               Text="{Binding ProductCodeText}"
+                                               TextColor="White"
+                                               FontSize="24"
+                                               FontAttributes="Bold" />
+
+                                        <Label Grid.Row="1"
+                                               Grid.Column="0"
+                                               Text="型号"
+                                               TextColor="#B8D6F5"
+                                               FontSize="24" />
+                                        <Label Grid.Row="1"
+                                               Grid.Column="1"
+                                               Text="{Binding ProductModelText}"
+                                               TextColor="White"
+                                               FontSize="24"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="1" />
+
+                                        <Label Grid.Row="2"
+                                               Grid.Column="0"
+                                               Text="价格"
+                                               TextColor="#B8D6F5"
+                                               FontSize="24" />
+                                        <Label Grid.Row="2"
+                                               Grid.Column="1"
+                                               Text="{Binding ProductPriceText}"
+                                               TextColor="#18F7FF"
+                                               FontSize="24"
+                                               FontAttributes="Bold" />
+
+                                        <Label Grid.Row="3"
+                                               Grid.Column="0"
+                                               Text="介绍"
+                                               TextColor="#B8D6F5"
+                                               FontSize="24" />
+                                        <Label Grid.Row="3"
+                                               Grid.Column="1"
+                                               Text="{Binding ProductDescriptionText}"
+                                               TextColor="White"
+                                               FontSize="24"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="6" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+
+                            <Grid Grid.Row="3"
+                                  ColumnDefinitions="*,*"
+                                  ColumnSpacing="18">
+                                <Button Grid.Column="0"
+                                        Text="加入购物车"
+                                        BackgroundColor="#18A5FF"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="26"
+                                        CornerRadius="8"
+                                        HeightRequest="70"
+                                        Command="{Binding AddToCartCommand}" />
+                                <Button Grid.Column="1"
+                                        Text="立即购买"
+                                        BackgroundColor="#18F7FF"
+                                        TextColor="#071629"
+                                        FontAttributes="Bold"
+                                        FontSize="26"
+                                        CornerRadius="8"
+                                        HeightRequest="70"
+                                        Command="{Binding BuyNowCommand}" />
+                            </Grid>
                         </Grid>
-                    </VerticalStackLayout>
-
-                    <!-- Divider -->
-                    <Border HeightRequest="1"
-                            BackgroundColor="#e0e0e0"
-                            StrokeThickness="0" />
-
-                    <!-- Action Buttons -->
-                    <Grid ColumnDefinitions="*,*"
-                          ColumnSpacing="12">
-                        <Button Grid.Column="0"
-                                Text="加入购物车"
-                                BackgroundColor="#FF9800"
-                                TextColor="White"
-                                FontAttributes="Bold"
-                                FontSize="15"
-                                CornerRadius="12"
-                                HeightRequest="52"
-                                Command="{Binding AddToCartCommand}" />
-                        <Button Grid.Column="1"
-                                Text="立即购买"
-                                BackgroundColor="#E53935"
-                                TextColor="White"
-                                FontAttributes="Bold"
-                                FontSize="15"
-                                CornerRadius="12"
-                                HeightRequest="52"
-                                Command="{Binding BuyNowCommand}" />
                     </Grid>
-
-                </VerticalStackLayout>
-            </Border>
-
-        </VerticalStackLayout>
-    </ScrollView>
-
+                </Border>
+            </AbsoluteLayout>
+        </Grid>
+    </Grid>
 </ContentPage>
