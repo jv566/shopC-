@@ -10,7 +10,7 @@ namespace Shop.Maui.ViewModels;
 public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributable
 {
     private const string ProductDetailBaseUrl =
-        "https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itwid=12104&itcid=12104";
+        "https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itwid=12105";
 
     private static readonly HttpClient HttpClient = new();
 
@@ -67,6 +67,8 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
     public ObservableCollection<ProductColorImageOption> ColorOptions { get; } = [];
 
+    public ObservableCollection<ProductSpecOptionGroup> SpecOptionGroups { get; } = [];
+
     public int CurrentColorIndex
     {
         get => _currentColorIndex;
@@ -75,6 +77,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             if (SetProperty(ref _currentColorIndex, value))
             {
                 OnPropertyChanged(nameof(ColorIndexText));
+                OnPropertyChanged(nameof(SelectedOptionText));
                 OnPropertyChanged(nameof(CanSwitchColor));
             }
         }
@@ -83,6 +86,15 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
     public bool CanSwitchColor => ColorOptions.Count > 1;
 
     public string ColorIndexText => ColorOptions.Count == 0 ? "0/0" : $"{CurrentColorIndex + 1}/{ColorOptions.Count}";
+
+    public string SelectedOptionText
+    {
+        get
+        {
+            var option = GetCurrentColorOption();
+            return option is null ? "未选择" : $"已选：{option.SpecName} {option.OptionName}";
+        }
+    }
 
     public ICommand SelectColorCommand { get; }
     public ICommand AddToCartCommand { get; }
@@ -141,21 +153,34 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             ApplyProductSnapshot(Product, detail.OriginalPriceText, detail.Description);
         }
 
-        var variants = await _colorVariantProvider.GetColorVariantsAsync(Product, cancellationToken);
+        var variants = detail?.Variants;
+        if (variants is null || variants.Count == 0)
+        {
+            variants = await _colorVariantProvider.GetColorVariantsAsync(Product, cancellationToken);
+        }
 
         var options = variants
-            .Select((x, index) => new ProductColorImageOption(index, x.ColorName, x.ImageUrl))
+            .Select((x, index) =>
+            {
+                var (specName, optionName) = SplitVariantName(x.ColorName);
+                return new ProductColorImageOption(index, x.ColorName, x.ImageUrl, specName, optionName);
+            })
             .ToList();
 
         if (options.Count == 0)
         {
             options =
             [
-                new ProductColorImageOption(0, "默认色", Product.ImageUrl)
+                new ProductColorImageOption(0, "默认色", Product.ImageUrl, "颜色", "默认色")
             ];
         }
 
         ReplaceCollection(ColorOptions, options);
+        ReplaceCollection(
+            SpecOptionGroups,
+            options
+                .GroupBy(x => x.SpecName)
+                .Select(group => new ProductSpecOptionGroup(group.Key, group)));
         SetCurrentColorIndex(0);
         _isInitialized = true;
     }
@@ -283,26 +308,70 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             using var response = await HttpClient.GetAsync(requestUrl, cancellationToken);
             response.EnsureSuccessStatusCode();
 
-            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            var json = ExtractJsonObject(content);
 
-            if (!document.RootElement.TryGetProperty("data", out var data))
+            if (string.IsNullOrWhiteSpace(json))
             {
                 return null;
             }
 
+            using var document = JsonDocument.Parse(json);
+
+            var root = document.RootElement;
+            JsonElement data;
+            if (root.TryGetProperty("result", out var result))
+            {
+                data = result;
+            }
+            else if (root.TryGetProperty("data", out var legacyData))
+            {
+                data = legacyData;
+            }
+            else
+            {
+                return null;
+            }
+
+            var imageUrl = GetFirstSkuImage(data);
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                imageUrl = GetString(data, "pic");
+            }
+
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                imageUrl = GetString(data, "\u56fe\u7247");
+            }
+
             return new ProductDetailPayload(
-                GetString(data, "code"),
+                FirstNonEmpty(GetString(data, "id"), GetString(data, "code"), GetString(data, "spuCode")),
                 GetString(data, "name"),
                 ParsePrice(GetString(data, "price")),
-                GetString(data, "yprice"),
-                GetString(data, "\u56fe\u7247"),
-                GetString(data, "info"));
+                FirstNonEmpty(GetString(data, "oldPrice"), GetString(data, "yprice")),
+                imageUrl,
+                FirstNonEmpty(GetString(data, "desc"), GetString(data, "info")),
+                BuildSpecVariants(data, imageUrl));
         }
         catch
         {
             return null;
         }
+    }
+
+    private static string ExtractJsonObject(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return string.Empty;
+        }
+
+        var startIndex = content.IndexOf('{');
+        var endIndex = content.LastIndexOf('}');
+
+        return startIndex >= 0 && endIndex > startIndex
+            ? content[startIndex..(endIndex + 1)]
+            : content.Trim();
     }
 
     private static string GetString(JsonElement element, string propertyName)
@@ -311,6 +380,70 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
                property.ValueKind == JsonValueKind.String
             ? property.GetString() ?? string.Empty
             : string.Empty;
+    }
+
+    private static string FirstNonEmpty(params string[] values)
+    {
+        return values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(CleanPlaceholder(value))) ?? string.Empty;
+    }
+
+    private static string GetFirstSkuImage(JsonElement data)
+    {
+        if (!data.TryGetProperty("skus", out var skus) ||
+            skus.ValueKind != JsonValueKind.Array)
+        {
+            return string.Empty;
+        }
+
+        foreach (var sku in skus.EnumerateArray())
+        {
+            var picture = GetString(sku, "picture");
+            if (!string.IsNullOrWhiteSpace(picture))
+            {
+                return picture;
+            }
+        }
+
+        return string.Empty;
+    }
+
+    private static IReadOnlyList<ProductColorVariant> BuildSpecVariants(JsonElement data, string fallbackImageUrl)
+    {
+        if (!data.TryGetProperty("specs", out var specs) ||
+            specs.ValueKind != JsonValueKind.Array)
+        {
+            return Array.Empty<ProductColorVariant>();
+        }
+
+        var variants = new List<ProductColorVariant>();
+
+        foreach (var spec in specs.EnumerateArray())
+        {
+            var specName = CleanPlaceholder(GetString(spec, "name"));
+            if (!spec.TryGetProperty("values", out var values) ||
+                values.ValueKind != JsonValueKind.Array)
+            {
+                continue;
+            }
+
+            foreach (var value in values.EnumerateArray())
+            {
+                var valueName = CleanPlaceholder(GetString(value, "name"));
+                if (string.IsNullOrWhiteSpace(valueName))
+                {
+                    continue;
+                }
+
+                var label = string.IsNullOrWhiteSpace(specName)
+                    ? valueName
+                    : $"{specName}：{valueName}";
+
+                var picture = FirstNonEmpty(GetString(value, "picture"), fallbackImageUrl);
+                variants.Add(new ProductColorVariant(label, picture));
+            }
+        }
+
+        return variants;
     }
 
     private static decimal? ParsePrice(string? price)
@@ -337,6 +470,23 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             : text;
     }
 
+    private static (string SpecName, string OptionName) SplitVariantName(string variantName)
+    {
+        var text = CleanPlaceholder(variantName);
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return ("可选类型", "默认");
+        }
+
+        var separatorIndex = text.IndexOfAny(['：', ':']);
+        if (separatorIndex <= 0 || separatorIndex >= text.Length - 1)
+        {
+            return ("颜色", text);
+        }
+
+        return (text[..separatorIndex].Trim(), text[(separatorIndex + 1)..].Trim());
+    }
+
     private static async Task ShowActionResultAsync(Task<UserActionResult> actionTask)
     {
         var result = await actionTask;
@@ -352,5 +502,6 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         decimal? Price,
         string OriginalPriceText,
         string ImageUrl,
-        string Description);
+        string Description,
+        IReadOnlyList<ProductColorVariant> Variants);
 }

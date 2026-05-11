@@ -6,6 +6,8 @@ namespace Shop.Maui.Services;
 
 public sealed class FileImageCacheService : IImageCacheService
 {
+    private const string PlaceholderImageSource = "product_bed.png";
+
     private static readonly HashSet<string> KnownExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".jpg",
@@ -32,7 +34,7 @@ public sealed class FileImageCacheService : IImageCacheService
         var cachePath = BuildCachePath(imageSource, uri);
         return File.Exists(cachePath) && new FileInfo(cachePath).Length > 0
             ? cachePath
-            : imageSource;
+            : PlaceholderImageSource;
     }
 
     public Task<string> GetCachedImageSourceAsync(
@@ -107,7 +109,7 @@ public sealed class FileImageCacheService : IImageCacheService
         }
         catch
         {
-            return imageSource;
+            return PlaceholderImageSource;
         }
     }
 

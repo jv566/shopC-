@@ -14,7 +14,9 @@ public sealed class ProductListDisplayItem : INotifyPropertyChanged
         string displayModelText,
         string modelLabelImageSource,
         string priceLabelImageSource,
-        string cardBackgroundImageSource)
+        string cardBackgroundImageSource,
+        bool isPlaceholder = false,
+        bool isEmptyState = false)
     {
         Product = product;
         _imageSource = imageSource;
@@ -23,6 +25,8 @@ public sealed class ProductListDisplayItem : INotifyPropertyChanged
         ModelLabelImageSource = modelLabelImageSource;
         PriceLabelImageSource = priceLabelImageSource;
         CardBackgroundImageSource = cardBackgroundImageSource;
+        IsPlaceholder = isPlaceholder;
+        IsEmptyState = isEmptyState;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -53,6 +57,12 @@ public sealed class ProductListDisplayItem : INotifyPropertyChanged
     public string PriceLabelImageSource { get; }
 
     public string CardBackgroundImageSource { get; }
+
+    public bool IsPlaceholder { get; }
+
+    public bool IsEmptyState { get; }
+
+    public bool CanNavigate => !IsPlaceholder && !IsEmptyState;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

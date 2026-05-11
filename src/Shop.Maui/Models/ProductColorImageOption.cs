@@ -7,16 +7,27 @@ public sealed class ProductColorImageOption : INotifyPropertyChanged
 {
     private bool _isSelected;
 
-    public ProductColorImageOption(int index, string colorName, string? imageUrl)
+    public ProductColorImageOption(
+        int index,
+        string colorName,
+        string? imageUrl,
+        string? specName = null,
+        string? optionName = null)
     {
         Index = index;
         ColorName = colorName;
         ImageUrl = imageUrl;
+        SpecName = string.IsNullOrWhiteSpace(specName) ? "可选类型" : specName.Trim();
+        OptionName = string.IsNullOrWhiteSpace(optionName) ? colorName.Trim() : optionName.Trim();
     }
 
     public int Index { get; }
 
     public string ColorName { get; }
+
+    public string SpecName { get; }
+
+    public string OptionName { get; }
 
     public string? ImageUrl { get; }
 

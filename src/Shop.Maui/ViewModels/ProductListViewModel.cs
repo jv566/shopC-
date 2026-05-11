@@ -15,6 +15,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
     // 默认商品图片
     private const string DefaultImageSource = "product_bed.png";
+    private const int ProductPlaceholderCount = 9;
 
     // 商品数据服务：负责根据分类 id 获取商品列表
     private readonly IProductProvider _productProvider;
@@ -45,6 +46,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
     // 防止 InitializeAsync 重复执行
     private bool _isInitialized;
+    private bool _isPagePreloadStarted;
     private int _productLoadVersion;
     private CancellationTokenSource? _productLoadCts;
 
@@ -143,7 +145,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         // 商品点击命令
         SelectProductCommand = new Command<ProductListItem>(async product =>
         {
-            if (product is not null)
+            if (product is not null && !string.IsNullOrWhiteSpace(product.Id))
             {
                 // 跳转到商品详情页
                 // 传入商品 id、型号、价格、图片
@@ -243,6 +245,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
             await SelectSecondaryCategoryAsync(matchedSecondary, cancellationToken);
 
             _isInitialized = true;
+            StartPageDataPreload();
             return;
         }
 
@@ -250,6 +253,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         await SelectPrimaryCategoryAsync(targetGroup.PrimaryCategory, cancellationToken);
 
         _isInitialized = true;
+        StartPageDataPreload();
     }
 
     // 选择一级分类
@@ -296,6 +300,8 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         ActiveSecondaryId = null;
 
         // 根据一级分类 id 获取商品
+        ShowProductPlaceholders();
+
         var products = await _productProvider.GetProductsAsync(
             primaryCategory.Id,
             cancellationToken);
@@ -312,6 +318,7 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         CancellationToken cancellationToken = default)
     {
         var loadToken = BeginProductLoad(cancellationToken, out var loadVersion);
+        ShowProductPlaceholders();
 
         // 顶部显示当前二级分类名称
         CurrentCategoryText = $"当前分类：{secondaryCategory.DisplayName}";
@@ -547,6 +554,55 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     }
 
     // 构建页面展示用的商品卡片列表
+    private void StartPageDataPreload()
+    {
+        if (_isPagePreloadStarted || CategoryTree.Count == 0)
+        {
+            return;
+        }
+
+        _isPagePreloadStarted = true;
+
+        var categoryIds = CategoryTree
+            .SelectMany(group => group.SecondaryCategories)
+            .Select(category => category.Id)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Where(id => !string.Equals(id, ActiveSecondaryId, StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (categoryIds.Count == 0)
+        {
+            return;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            using var throttler = new SemaphoreSlim(3);
+            var tasks = categoryIds.Select(async categoryId =>
+            {
+                await throttler.WaitAsync().ConfigureAwait(false);
+
+                try
+                {
+                    await _productProvider.GetProductsAsync(categoryId, CancellationToken.None).ConfigureAwait(false);
+                }
+                finally
+                {
+                    throttler.Release();
+                }
+            });
+
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch
+            {
+            }
+        });
+    }
+
     private Task<IReadOnlyList<ProductListDisplayItem>> BuildDisplayProductsAsync(
         IEnumerable<ProductListItem> products,
         string? primaryCategoryId,
@@ -558,7 +614,8 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         // 如果没有商品，返回空数组
         if (source.Count == 0)
         {
-            return Task.FromResult<IReadOnlyList<ProductListDisplayItem>>(Array.Empty<ProductListDisplayItem>());
+            return Task.FromResult<IReadOnlyList<ProductListDisplayItem>>(
+                [CreateEmptyStateItem()]);
         }
 
         var result = new List<ProductListDisplayItem>(source.Count);
@@ -593,6 +650,35 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         _ = RefreshCachedImagesAsync(result, primaryCategoryId, cancellationToken);
 
         return Task.FromResult<IReadOnlyList<ProductListDisplayItem>>(result);
+    }
+
+    private void ShowProductPlaceholders()
+    {
+        ReplaceCollection(
+            DisplayProducts,
+            Enumerable.Range(0, ProductPlaceholderCount)
+                .Select(_ => new ProductListDisplayItem(
+                    new ProductListItem(string.Empty, string.Empty, string.Empty, 0m, null),
+                    DefaultImageSource,
+                    string.Empty,
+                    "...",
+                    "label_model.png",
+                    "label_price.png",
+                    "card_panel.png",
+                    true)));
+    }
+
+    private static ProductListDisplayItem CreateEmptyStateItem()
+    {
+        return new ProductListDisplayItem(
+            new ProductListItem(string.Empty, string.Empty, string.Empty, 0m, null),
+            DefaultImageSource,
+            string.Empty,
+            "无数据",
+            "label_model.png",
+            "label_price.png",
+            "card_panel.png",
+            isEmptyState: true);
     }
 
     private async Task RefreshCachedImagesAsync(

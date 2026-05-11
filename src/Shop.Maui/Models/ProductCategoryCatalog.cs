@@ -23,45 +23,59 @@ public static class ProductCategoryCatalog
                 new ReadOnlyCollection<ProductCategoryOption>(
                     new List<ProductCategoryOption>
                     {
-                        new("bed-wood", "木板床"),
-                        new("bed-leather", "真皮床"),
-                        new("bed-fabric", "布艺床")
+                        new("12", "真皮床"),
+                        new("13", "植物皮床"),
+                        new("14", "布艺床"),
+                        new("15", "实木硬靠床"),
+                        new("16", "实木软靠床")
                     })),
             new(
                 new ProductCategoryOption(PrimaryIds.Sofa, "沙发"),
                 new ReadOnlyCollection<ProductCategoryOption>(
                     new List<ProductCategoryOption>
                     {
-                        new("sofa-leather", "真皮沙发"),
-                        new("sofa-fabric", "布艺沙发"),
-                        new("sofa-corner", "转角沙发")
+                        new("17", "真皮沙发"),
+                        new("18", "植物皮沙发"),
+                        new("19", "布艺沙发"),
+                        new("20", "新中式沙发"),
+                        new("21", "乌金木沙发"),
+                        new("22", "办公沙发")
                     })),
             new(
                 new ProductCategoryOption(PrimaryIds.Table, "桌子"),
                 new ReadOnlyCollection<ProductCategoryOption>(
                     new List<ProductCategoryOption>
                     {
-                        new("table-dining", "餐桌"),
-                        new("table-coffee", "茶几"),
-                        new("table-side", "边几")
+                        new("23", "西餐桌"),
+                        new("24", "实木西餐桌"),
+                        new("26", "石面西餐桌"),
+                        new("27", "跳台餐桌"),
+                        new("30", "实木跳台餐桌"),
+                        new("31", "石面跳台餐桌"),
+                        new("32", "圆餐桌"),
+                        new("33", "普通餐椅"),
+                        new("34", "实木餐椅")
                     })),
             new(
                 new ProductCategoryOption(PrimaryIds.Wardrobe, "衣柜"),
                 new ReadOnlyCollection<ProductCategoryOption>(
                     new List<ProductCategoryOption>
                     {
-                        new("wardrobe-sliding", "推拉门衣柜"),
-                        new("wardrobe-hinged", "平开门衣柜"),
-                        new("wardrobe-custom", "定制衣柜")
+                        new("35", "衣柜"),
+                        new("36", "边柜"),
+                        new("37", "鞋柜"),
+                        new("38", "玄关柜"),
+                        new("39", "书柜"),
+                        new("40", "博古架")
                     })),
             new(
                 new ProductCategoryOption(PrimaryIds.Custom, "定制柜"),
                 new ReadOnlyCollection<ProductCategoryOption>(
                     new List<ProductCategoryOption>
                     {
-                        new("custom-tv", "电视柜"),
-                        new("custom-entry", "玄关柜"),
-                        new("custom-cabinet", "多功能柜")
+                        new("56", "梳妆台"),
+                        new("57", "梳妆凳"),
+                        new("58", "书桌")
                     }))
         });
 
