@@ -45,6 +45,8 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
     // 防止 InitializeAsync 重复执行
     private bool _isInitialized;
+    private int _productLoadVersion;
+    private CancellationTokenSource? _productLoadCts;
 
     // 分类树数据
     // ObservableCollection 适合绑定到界面，添加/删除元素时界面会刷新
@@ -255,6 +257,12 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         ProductCategoryOption primaryCategory,
         CancellationToken cancellationToken = default)
     {
+        if (IsPrimaryMenuExpanded(primaryCategory.Id))
+        {
+            CollapsePrimaryMenu();
+            return;
+        }
+
         // 顶部显示：当前分类：xxx（全部）
         CurrentCategoryText = $"当前分类：{primaryCategory.DisplayName}（全部）";
 
@@ -303,6 +311,8 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         ProductCategoryOption secondaryCategory,
         CancellationToken cancellationToken = default)
     {
+        var loadToken = BeginProductLoad(cancellationToken, out var loadVersion);
+
         // 顶部显示当前二级分类名称
         CurrentCategoryText = $"当前分类：{secondaryCategory.DisplayName}";
 
@@ -335,12 +345,26 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         // 根据二级分类 id 获取商品
         var products = await _productProvider.GetProductsAsync(
             secondaryCategory.Id,
-            cancellationToken);
+            loadToken);
+
+        if (!IsCurrentProductLoad(loadVersion, loadToken))
+        {
+            return;
+        }
 
         // 构建商品展示卡片
-        ReplaceCollection(
-            DisplayProducts,
-            await BuildDisplayProductsAsync(products, ActivePrimaryId, cancellationToken));
+        var displayProducts = await BuildDisplayProductsAsync(products, ActivePrimaryId, loadToken);
+        if (!IsCurrentProductLoad(loadVersion, loadToken))
+        {
+            return;
+        }
+
+        ReplaceCollection(DisplayProducts, displayProducts);
+
+        if (targetGroup is not null)
+        {
+            PrefetchSecondaryProducts(targetGroup.SecondaryCategories, secondaryCategory.Id);
+        }
     }
 
     // 判断入口分类是否和某个候选值匹配
@@ -417,6 +441,22 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
             PrimaryMenus.Where(menu => !ReferenceEquals(menu, selected)));
     }
 
+    private bool IsPrimaryMenuExpanded(string? primaryId)
+    {
+        return SelectedPrimaryMenu is not null
+            && SelectedPrimaryMenu.IsSelected
+            && SecondaryMenus.Count > 0
+            && string.Equals(SelectedPrimaryMenu.Id, primaryId, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void CollapsePrimaryMenu()
+    {
+        CancelCurrentProductLoad();
+        SetPrimarySelection(null);
+        RefreshSecondaryMenus(Array.Empty<ProductCategoryOption>(), null);
+        ActiveSecondaryId = null;
+    }
+
     // 刷新二级菜单
     private void RefreshSecondaryMenus(
         IEnumerable<ProductCategoryOption> secondaryCategories,
@@ -439,6 +479,71 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
         // 替换二级菜单集合
         ReplaceCollection(SecondaryMenus, items);
+    }
+
+    private CancellationToken BeginProductLoad(
+        CancellationToken cancellationToken,
+        out int loadVersion)
+    {
+        CancelCurrentProductLoad();
+        _productLoadCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        loadVersion = ++_productLoadVersion;
+        return _productLoadCts.Token;
+    }
+
+    private void CancelCurrentProductLoad()
+    {
+        _productLoadCts?.Cancel();
+        _productLoadCts?.Dispose();
+        _productLoadCts = null;
+        _productLoadVersion++;
+    }
+
+    private bool IsCurrentProductLoad(int loadVersion, CancellationToken cancellationToken)
+    {
+        return loadVersion == _productLoadVersion && !cancellationToken.IsCancellationRequested;
+    }
+
+    private void PrefetchSecondaryProducts(
+        IEnumerable<ProductCategoryOption> secondaryCategories,
+        string selectedSecondaryId)
+    {
+        var nextCategories = secondaryCategories
+            .Where(category => !string.Equals(category.Id, selectedSecondaryId, StringComparison.OrdinalIgnoreCase))
+            .Select(category => category.Id)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToList();
+
+        if (nextCategories.Count == 0)
+        {
+            return;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            using var throttler = new SemaphoreSlim(2);
+            var tasks = nextCategories.Select(async categoryId =>
+            {
+                await throttler.WaitAsync().ConfigureAwait(false);
+
+                try
+                {
+                    await _productProvider.GetProductsAsync(categoryId, CancellationToken.None).ConfigureAwait(false);
+                }
+                finally
+                {
+                    throttler.Release();
+                }
+            });
+
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch
+            {
+            }
+        });
     }
 
     // 构建页面展示用的商品卡片列表

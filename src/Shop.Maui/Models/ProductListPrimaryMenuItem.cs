@@ -74,14 +74,14 @@ public sealed class ProductListPrimaryMenuItem : INotifyPropertyChanged
     // 背景颜色
     // IsSelected 为 true 用浅蓝色，否则用深蓝色
     public Color BackgroundColor => IsSelected
-        ? Color.FromArgb("#4F9CE8")
-        : Color.FromArgb("#3D78BC");
+        ? Color.FromArgb("#3F8ED1")
+        : Color.FromArgb("#244F82");
 
     // 边框颜色
     // 选中和未选中使用不同颜色
     public Color StrokeColor => IsSelected
-        ? Color.FromArgb("#8DEFFF")
-        : Color.FromArgb("#4D87C9");
+        ? Color.FromArgb("#18F7FF")
+        : Color.FromArgb("#3B73AA");
 
     // 文字颜色，固定为白色
     public Color TextColor => Colors.White;

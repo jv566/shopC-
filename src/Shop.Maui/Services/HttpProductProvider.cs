@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Shop.Maui.Models;
@@ -8,14 +9,19 @@ namespace Shop.Maui.Services;
 public sealed class HttpProductProvider : IProductProvider
 {
     private const string ProductListBaseUrl =
-        "http://www.ruanzi.net/jy/go/we.aspx?ituid=121&itjid=12101&itcid=12103";
+        "https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itjid=12101&itcid=12103";
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    private readonly HttpClient _httpClient = new();
+    private readonly ConcurrentDictionary<string, IReadOnlyList<ProductListItem>> _cache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, Lazy<Task<IReadOnlyList<ProductListItem>>>> _inflight = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HttpClient _httpClient = new()
+    {
+        Timeout = TimeSpan.FromSeconds(10)
+    };
 
     public async Task<IReadOnlyList<ProductListItem>> GetProductsAsync(
         string categoryId,
@@ -26,10 +32,42 @@ public sealed class HttpProductProvider : IProductProvider
             return Array.Empty<ProductListItem>();
         }
 
+        var cacheKey = categoryId.Trim();
+        if (_cache.TryGetValue(cacheKey, out var cachedProducts))
+        {
+            return cachedProducts;
+        }
+
+        var lazy = _inflight.GetOrAdd(
+            cacheKey,
+            key => new Lazy<Task<IReadOnlyList<ProductListItem>>>(
+                () => FetchProductsAsync(key, cancellationToken),
+                LazyThreadSafetyMode.ExecutionAndPublication));
+
+        try
+        {
+            var products = await lazy.Value.ConfigureAwait(false);
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                _cache.TryAdd(cacheKey, products);
+            }
+
+            return products;
+        }
+        finally
+        {
+            _inflight.TryRemove(cacheKey, out _);
+        }
+    }
+
+    private async Task<IReadOnlyList<ProductListItem>> FetchProductsAsync(
+        string categoryId,
+        CancellationToken cancellationToken)
+    {
         try
         {
             var requestUrl =
-                $"{ProductListBaseUrl}&keyvalue={Uri.EscapeDataString(categoryId.Trim())}";
+                $"{ProductListBaseUrl}&keyvalue={Uri.EscapeDataString(categoryId)}";
 
             using var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
             response.EnsureSuccessStatusCode();

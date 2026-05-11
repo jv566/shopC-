@@ -58,28 +58,42 @@
                                     <VerticalStackLayout Spacing="0">
                                         <Grid HeightRequest="100">
                                             
-                                            <Image Source="{Binding BackgroundImageSource}"
-                                                   Aspect="Fill"
-                                                   Opacity="0.92" />
+                                            <Border BackgroundColor="{Binding BackgroundColor}"
+                                                    Stroke="{Binding StrokeColor}"
+                                                    StrokeThickness="2"
+                                                    StrokeShape="RoundRectangle 8">
+                                                <Border.Shadow>
+                                                    <Shadow Brush="#020B1B"
+                                                            Offset="0,5"
+                                                            Radius="12"
+                                                            Opacity="0.22" />
+                                                </Border.Shadow>
 
-                                            <Grid Padding="28,0"
-                                                  ColumnDefinitions="112,*">
-                                                <Image Grid.Column="0"
-                                                       Source="{Binding IconSource}"
-                                                       WidthRequest="75"
-                                                       HeightRequest="60"
-                                                       Aspect="AspectFit"
-                                                       HorizontalOptions="Center"
-                                                       VerticalOptions="Center" />
+                                                <Grid Padding="0"
+                                                      ColumnDefinitions="8,108,*">
+                                                    <Border Grid.Column="0"
+                                                            StrokeThickness="0"
+                                                            BackgroundColor="#18F7FF"
+                                                            Opacity="0.86" />
 
-                                                <Label Grid.Column="1"
-                                                       Text="{Binding DisplayName}"
-                                                       TextColor="{Binding TextColor}"
-                                                       FontSize="34"
-                                                       FontAttributes="Bold"
-                                                       HorizontalTextAlignment="Center"
-                                                       VerticalTextAlignment="Center" />
-                                            </Grid>
+                                                    <Image Grid.Column="1"
+                                                           Source="{Binding IconSource}"
+                                                           WidthRequest="66"
+                                                           HeightRequest="54"
+                                                           Aspect="AspectFit"
+                                                           HorizontalOptions="Center"
+                                                           VerticalOptions="Center" />
+
+                                                    <Label Grid.Column="2"
+                                                           Margin="0,0,22,0"
+                                                           Text="{Binding DisplayName}"
+                                                           TextColor="{Binding TextColor}"
+                                                           FontSize="34"
+                                                           FontAttributes="Bold"
+                                                           HorizontalTextAlignment="Center"
+                                                           VerticalTextAlignment="Center" />
+                                                </Grid>
+                                            </Border>
 
                                             <Grid.GestureRecognizers>
                                                 <TapGestureRecognizer
@@ -93,6 +107,7 @@
                                                         SelectionMode="None"
                                                         VerticalScrollBarVisibility="Never"
                                                         Margin="0,10,0,0">
+
                                             <CollectionView.ItemsLayout>
                                                 <LinearItemsLayout Orientation="Vertical"
                                                                    ItemSpacing="0" />
@@ -129,7 +144,7 @@
                         </CollectionView>
                     </Grid>
                 </Grid>
-
+                    <!-- 右边商品卡片 -->
                 <CollectionView AbsoluteLayout.LayoutBounds="516,96,1324,890"
                                 AbsoluteLayout.LayoutFlags="None"
                                 ItemsSource="{Binding DisplayProducts}"
