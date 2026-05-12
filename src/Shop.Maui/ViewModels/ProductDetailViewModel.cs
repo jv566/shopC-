@@ -103,8 +103,14 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
     {
         get
         {
-            var option = GetCurrentColorOption();
-            return option is null ? "未选择" : $"已选：{option.SpecName} {option.OptionName}";
+            var selectedOptions = ColorOptions
+                .Where(option => option.IsSelected)
+                .Select(option => $"{option.SpecName} {option.OptionName}")
+                .ToList();
+
+            return selectedOptions.Count == 0
+                ? "未选择"
+                : $"已选：{string.Join("，", selectedOptions)}";
         }
     }
 
@@ -205,7 +211,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             options
                 .GroupBy(x => x.SpecName)
                 .Select(group => new ProductSpecOptionGroup(group.Key, group)));
-        SetCurrentColorIndex(0);
+        SelectDefaultSpecOptions();
         _isInitialized = true;
     }
 
@@ -238,14 +244,32 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
         CurrentColorIndex = targetIndex;
 
+        var selectedOption = ColorOptions[targetIndex];
         for (var i = 0; i < ColorOptions.Count; i++)
         {
-            ColorOptions[i].IsSelected = i == targetIndex;
+            if (string.Equals(ColorOptions[i].SpecName, selectedOption.SpecName, StringComparison.OrdinalIgnoreCase))
+            {
+                ColorOptions[i].IsSelected = i == targetIndex;
+            }
         }
 
-        var imageSource = ColorOptions[targetIndex].ImageUrl;
+        OnPropertyChanged(nameof(SelectedOptionText));
+
+        var imageSource = selectedOption.ImageUrl;
         ApplyImageSource(imageSource);
         _ = RefreshSelectedImageAsync(targetIndex, imageSource);
+    }
+
+    private void SelectDefaultSpecOptions()
+    {
+        foreach (var group in SpecOptionGroups)
+        {
+            var option = group.Options.FirstOrDefault();
+            if (option is not null)
+            {
+                SetCurrentColorIndex(option.Index);
+            }
+        }
     }
 
     public bool TryGetRelativeTargetIndex(int step, out int targetIndex, out int direction)
@@ -292,9 +316,10 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
     private void ApplyImageSource(string? imageSource)
     {
-        ProductImageSource = string.IsNullOrWhiteSpace(imageSource)
+        var normalizedImageSource = NormalizeImageUrl(imageSource);
+        ProductImageSource = string.IsNullOrWhiteSpace(normalizedImageSource)
             ? "product_bed.png"
-            : _imageCacheService.GetBestImageSource(imageSource);
+            : _imageCacheService.GetBestImageSource(normalizedImageSource);
     }
 
     private async Task RefreshSelectedImageAsync(int targetIndex, string? imageSource)
@@ -304,7 +329,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             return;
         }
 
-        var cachedSource = await _imageCacheService.GetCachedImageSourceAsync(imageSource);
+        var cachedSource = await _imageCacheService.GetCachedImageSourceAsync(NormalizeImageUrl(imageSource));
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
@@ -372,6 +397,8 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             {
                 imageUrl = GetFirstMainPicture(data);
             }
+
+            imageUrl = NormalizeImageUrl(imageUrl);
 
             var payload = new ProductDetailPayload(
                 FirstNonEmpty(GetString(data, "code"), GetString(data, "spuCode"), GetString(data, "id")),
@@ -571,7 +598,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
                     ? valueName
                     : $"{specName}：{valueName}";
 
-                var picture = FirstNonEmpty(GetString(value, "picture"), fallbackImageUrl);
+                var picture = NormalizeSpecImageUrl(GetString(value, "picture"), fallbackImageUrl);
                 variants.Add(new ProductColorVariant(label, picture));
             }
         }
@@ -601,6 +628,45 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         return text.StartsWith("[#", StringComparison.Ordinal) && text.EndsWith(']')
             ? string.Empty
             : text;
+    }
+
+    private static string NormalizeSpecImageUrl(string? imageUrl, string fallbackImageUrl)
+    {
+        var normalized = NormalizeImageUrl(imageUrl);
+        if (string.IsNullOrWhiteSpace(normalized) || IsGenericSpecPlaceholder(normalized))
+        {
+            return NormalizeImageUrl(fallbackImageUrl);
+        }
+
+        return normalized;
+    }
+
+    private static bool IsGenericSpecPlaceholder(string imageUrl)
+    {
+        return imageUrl.Contains(
+            "yanxuan-item.nosdn.127.net/e9576618dfa4b04f1bdf2145447b4ded.png",
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeImageUrl(string? imageUrl)
+    {
+        var value = CleanPlaceholder(imageUrl);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        value = value.Trim();
+
+        var nestedHttpsIndex = value.IndexOf("https://", "https://".Length, StringComparison.OrdinalIgnoreCase);
+        var nestedHttpIndex = value.IndexOf("http://", "http://".Length, StringComparison.OrdinalIgnoreCase);
+        var nestedIndexes = new[] { nestedHttpsIndex, nestedHttpIndex }
+            .Where(index => index >= 0)
+            .ToList();
+
+        return nestedIndexes.Count == 0
+            ? value
+            : value[nestedIndexes.Min()..];
     }
 
     private string GetProductDescriptionKey()

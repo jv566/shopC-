@@ -70,7 +70,7 @@
                                 BackgroundColor="#EAF4FF">
                             <Grid>
                                 <Image Source="{Binding ProductImageSource}"
-                                       Aspect="AspectFill"
+                                       Aspect="AspectFit"
                                        HorizontalOptions="Fill"
                                        VerticalOptions="Fill" />
 
