@@ -30,6 +30,17 @@
             <AbsoluteLayout WidthRequest="1920"
                             HeightRequest="1080">
 
+                <Button AbsoluteLayout.LayoutBounds="24,24,132,52"
+                        AbsoluteLayout.LayoutFlags="None"
+                        Text="&#x2190; &#x8FD4;&#x56DE;"
+                        FontSize="24"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        BackgroundColor="#315F98"
+                        BorderColor="#18F7FF"
+                        BorderWidth="1"
+                        CornerRadius="8"
+                        Clicked="OnBackClicked" />
 
                 <!-- 左侧菜单区 -->
                 <Grid AbsoluteLayout.LayoutBounds="117,96,369,890"

@@ -25,6 +25,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
     private bool _isInitialized;
     private int _currentColorIndex;
     private string _requestedProductId = string.Empty;
+    private IReadOnlyList<ProductSkuPayload> _skuOptions = Array.Empty<ProductSkuPayload>();
 
     public ProductListItem Product { get; private set; } = new("", "", "", 0m, null);
 
@@ -164,6 +165,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         var detail = await FetchProductDetailAsync(productCode, cancellationToken);
         if (detail is not null)
         {
+            _skuOptions = detail.Skus;
             Product = new ProductListItem(
                 string.IsNullOrWhiteSpace(detail.Code) ? Product.Id : detail.Code,
                 Product.CategoryId,
@@ -255,7 +257,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
         OnPropertyChanged(nameof(SelectedOptionText));
 
-        var imageSource = selectedOption.ImageUrl;
+        var imageSource = ApplySelectedSkuSnapshot(selectedOption.ImageUrl);
         ApplyImageSource(imageSource);
         _ = RefreshSelectedImageAsync(targetIndex, imageSource);
     }
@@ -407,7 +409,8 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
                 FirstNonEmpty(GetString(data, "oldPrice"), GetString(data, "yprice")),
                 imageUrl,
                 FirstNonEmpty(GetString(data, "desc"), GetString(data, "info")),
-                BuildSpecVariants(data, imageUrl));
+                BuildSpecVariants(data, imageUrl),
+                BuildSkuPayloads(data));
 
             return IsDetailMatch(productId, payload, data)
                 ? payload
@@ -521,6 +524,69 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         return string.Empty;
     }
 
+    private string? ApplySelectedSkuSnapshot(string? fallbackImageSource)
+    {
+        var selectedSpecs = ColorOptions
+            .Where(option => option.IsSelected)
+            .GroupBy(option => NormalizeSpecKey(option.SpecName))
+            .ToDictionary(
+                group => group.Key,
+                group => NormalizeSpecKey(group.Last().OptionName),
+                StringComparer.OrdinalIgnoreCase);
+
+        if (selectedSpecs.Count == 0)
+        {
+            return fallbackImageSource;
+        }
+
+        var matchedSku = _skuOptions.FirstOrDefault(sku => IsSkuMatch(sku, selectedSpecs));
+        if (matchedSku is null)
+        {
+            return fallbackImageSource;
+        }
+
+        var price = matchedSku.Price ?? Product.SalePrice;
+        var imageUrl = FirstNonEmpty(matchedSku.ImageUrl, fallbackImageSource ?? Product.ImageUrl ?? string.Empty);
+
+        Product = new ProductListItem(
+            string.IsNullOrWhiteSpace(matchedSku.Code) ? Product.Id : matchedSku.Code,
+            Product.CategoryId,
+            Product.ModelName,
+            price,
+            imageUrl);
+
+        ProductPriceText = FormatPrice(price);
+        if (matchedSku.OriginalPrice is not null)
+        {
+            ProductOriginalPriceText = FormatPrice(matchedSku.OriginalPrice.Value);
+        }
+
+        return imageUrl;
+    }
+
+    private static bool IsSkuMatch(
+        ProductSkuPayload sku,
+        IReadOnlyDictionary<string, string> selectedSpecs)
+    {
+        if (sku.Specs.Count == 0 || selectedSpecs.Count < sku.Specs.Count)
+        {
+            return false;
+        }
+
+        foreach (var spec in sku.Specs)
+        {
+            var specName = NormalizeSpecKey(spec.Key);
+            var specValue = NormalizeSpecKey(spec.Value);
+            if (!selectedSpecs.TryGetValue(specName, out var selectedValue) ||
+                !string.Equals(selectedValue, specValue, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static bool IsDetailMatch(string requestedProductId, ProductDetailPayload payload, JsonElement data)
     {
         var requested = NormalizeProductCode(requestedProductId);
@@ -606,6 +672,58 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         return variants;
     }
 
+    private static IReadOnlyList<ProductSkuPayload> BuildSkuPayloads(JsonElement data)
+    {
+        if (!data.TryGetProperty("skus", out var skus) ||
+            skus.ValueKind != JsonValueKind.Array)
+        {
+            return Array.Empty<ProductSkuPayload>();
+        }
+
+        var result = new List<ProductSkuPayload>();
+        foreach (var sku in skus.EnumerateArray())
+        {
+            var specs = BuildSkuSpecs(sku);
+            if (specs.Count == 0)
+            {
+                continue;
+            }
+
+            result.Add(new ProductSkuPayload(
+                FirstNonEmpty(GetString(sku, "skuCode"), GetString(sku, "code"), GetString(sku, "id")),
+                ParsePrice(GetString(sku, "price")),
+                ParsePrice(GetString(sku, "oldPrice")),
+                NormalizeImageUrl(GetString(sku, "picture")),
+                specs));
+        }
+
+        return result;
+    }
+
+    private static IReadOnlyDictionary<string, string> BuildSkuSpecs(JsonElement sku)
+    {
+        if (!sku.TryGetProperty("specs", out var specsElement) ||
+            specsElement.ValueKind != JsonValueKind.Array)
+        {
+            return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        var specs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var spec in specsElement.EnumerateArray())
+        {
+            var name = CleanPlaceholder(GetString(spec, "name"));
+            var valueName = CleanPlaceholder(GetString(spec, "valueName"));
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(valueName))
+            {
+                continue;
+            }
+
+            specs[name] = valueName;
+        }
+
+        return specs;
+    }
+
     private static decimal? ParsePrice(string? price)
     {
         return decimal.TryParse(
@@ -667,6 +785,14 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         return nestedIndexes.Count == 0
             ? value
             : value[nestedIndexes.Min()..];
+    }
+
+    private static string NormalizeSpecKey(string? value)
+    {
+        return CleanPlaceholder(value)
+            .Trim()
+            .Replace(" ", string.Empty, StringComparison.Ordinal)
+            .ToUpperInvariant();
     }
 
     private string GetProductDescriptionKey()
@@ -805,5 +931,13 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         string OriginalPriceText,
         string ImageUrl,
         string Description,
-        IReadOnlyList<ProductColorVariant> Variants);
+        IReadOnlyList<ProductColorVariant> Variants,
+        IReadOnlyList<ProductSkuPayload> Skus);
+
+    private sealed record ProductSkuPayload(
+        string Code,
+        decimal? Price,
+        decimal? OriginalPrice,
+        string ImageUrl,
+        IReadOnlyDictionary<string, string> Specs);
 }

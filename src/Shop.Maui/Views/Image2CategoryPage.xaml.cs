@@ -34,4 +34,9 @@ public partial class Image2CategoryPage : ContentPage
         DesignRoot.TranslationX = (Viewport.Width - DesignWidth * scale) / 2;
         DesignRoot.TranslationY = (Viewport.Height - DesignHeight * scale) / 2;
     }
+
+    private async void OnBackClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//home");
+    }
 }
