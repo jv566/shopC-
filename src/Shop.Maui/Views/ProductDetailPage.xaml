@@ -141,7 +141,7 @@
                                         Padding="0,0,10,0"
                                         HorizontalScrollBarVisibility="Never"
                                         VerticalScrollBarVisibility="Always">
-                                <Grid RowDefinitions="Auto,Auto,Auto"
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                                       RowSpacing="18">
                                     <Grid Grid.Row="0"
                                           ColumnDefinitions="*,Auto">
@@ -219,7 +219,7 @@
                                             StrokeThickness="1"
                                             StrokeShape="RoundRectangle 8"
                                             BackgroundColor="#66132642">
-                                        <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                                        <Grid RowDefinitions="Auto,Auto,Auto"
                                               ColumnDefinitions="128,*"
                                               RowSpacing="18"
                                               ColumnSpacing="22">
@@ -261,17 +261,38 @@
                                                    FontSize="24"
                                                    FontAttributes="Bold" />
 
-                                            <Label Grid.Row="3"
-                                                   Grid.Column="0"
-                                                   Text="介绍"
-                                                   TextColor="#B8D6F5"
-                                                   FontSize="24" />
-                                            <Label Grid.Row="3"
-                                                   Grid.Column="1"
-                                                   Text="{Binding ProductDescriptionText}"
-                                                   TextColor="White"
-                                                   FontSize="24"
-                                                   LineBreakMode="WordWrap" />
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Grid.Row="3"
+                                            Margin="0,0,0,8"
+                                            Padding="0"
+                                            Stroke="#3B73AA"
+                                            StrokeThickness="1"
+                                            StrokeShape="RoundRectangle 8"
+                                            BackgroundColor="#66132642">
+                                        <Grid RowDefinitions="64,*">
+                                            <Grid Grid.Row="0"
+                                                  Padding="26,0"
+                                                  ColumnDefinitions="*,Auto"
+                                                  BackgroundColor="#3318F7FF">
+                                                <Label Grid.Column="0"
+                                                       Text="介绍"
+                                                       TextColor="White"
+                                                       FontSize="26"
+                                                       FontAttributes="Bold"
+                                                       VerticalTextAlignment="Center" />
+                                                <Label Grid.Column="1"
+                                                       Text="商品详情"
+                                                       TextColor="#B8D6F5"
+                                                       FontSize="22"
+                                                       VerticalTextAlignment="Center" />
+                                            </Grid>
+
+                                            <WebView Grid.Row="1"
+                                                     HeightRequest="460"
+                                                     BackgroundColor="#102947"
+                                                     Source="{Binding ProductDescriptionSource}" />
                                         </Grid>
                                     </Border>
                                 </Grid>

@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Net;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 using Shop.Maui.Models;
 using Shop.Maui.Services;
@@ -11,6 +13,9 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 {
     private const string ProductDetailBaseUrl =
         "https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itwid=12105";
+    private const string ProductDescriptionBaseUrl =
+        "https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itwid=05&itcid=12105";
+    private const string ProductDescriptionTestKey = "C055-7";
 
     private static readonly HttpClient HttpClient = new();
 
@@ -56,6 +61,13 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
     {
         get => _productDescriptionText;
         private set => SetProperty(ref _productDescriptionText, value);
+    }
+
+    private WebViewSource _productDescriptionSource = CreateDescriptionSource(null, "介绍加载中...");
+    public WebViewSource ProductDescriptionSource
+    {
+        get => _productDescriptionSource;
+        private set => SetProperty(ref _productDescriptionSource, value);
     }
 
     private string _productImageSource = "product_bed.png";
@@ -131,6 +143,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
         Product = new ProductListItem(productId, string.Empty, modelName, salePrice, imageUrl);
         ApplyProductSnapshot(Product, null, null);
+        ProductDescriptionSource = CreateDescriptionSource(null, "介绍加载中...");
     }
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
@@ -152,6 +165,11 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
             ApplyProductSnapshot(Product, detail.OriginalPriceText, detail.Description);
         }
+
+        var descriptionHtml = await FetchProductDescriptionHtmlAsync(GetProductDescriptionKey(), cancellationToken);
+        ProductDescriptionSource = string.IsNullOrWhiteSpace(descriptionHtml)
+            ? CreateDescriptionSource(ProductDescriptionText, "暂无介绍")
+            : CreateDescriptionSource(descriptionHtml);
 
         var variants = detail?.Variants;
         if (variants is null || variants.Count == 0)
@@ -345,7 +363,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             }
 
             return new ProductDetailPayload(
-                FirstNonEmpty(GetString(data, "id"), GetString(data, "code"), GetString(data, "spuCode")),
+                FirstNonEmpty(GetString(data, "code"), GetString(data, "spuCode"), GetString(data, "id")),
                 GetString(data, "name"),
                 ParsePrice(GetString(data, "price")),
                 FirstNonEmpty(GetString(data, "oldPrice"), GetString(data, "yprice")),
@@ -356,6 +374,32 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         catch
         {
             return null;
+        }
+    }
+
+    private async Task<string> FetchProductDescriptionHtmlAsync(
+        string productId,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(productId))
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            var requestUrl =
+                $"{ProductDescriptionBaseUrl}&keyvalue={Uri.EscapeDataString(productId.Trim())}";
+
+            using var response = await HttpClient.GetAsync(requestUrl, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return StripOuterHtml(content);
+        }
+        catch
+        {
+            return string.Empty;
         }
     }
 
@@ -468,6 +512,107 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         return text.StartsWith("[#", StringComparison.Ordinal) && text.EndsWith(']')
             ? string.Empty
             : text;
+    }
+
+    private string GetProductDescriptionKey()
+    {
+        if (!string.IsNullOrWhiteSpace(ProductDescriptionTestKey))
+        {
+            return ProductDescriptionTestKey;
+        }
+
+        return string.IsNullOrWhiteSpace(ProductCodeText) || ProductCodeText == "-"
+            ? Product.Id
+            : ProductCodeText;
+    }
+
+    private static WebViewSource CreateDescriptionSource(string? html, string? fallbackText = null)
+    {
+        var body = CleanPlaceholder(html);
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            body = $"""
+                <div class="empty">{WebUtility.HtmlEncode(fallbackText ?? "暂无介绍")}</div>
+                """;
+        }
+        else if (!LooksLikeHtml(body))
+        {
+            body = $"<p>{WebUtility.HtmlEncode(body).Replace("\n", "<br>", StringComparison.Ordinal)}</p>";
+        }
+
+        return new HtmlWebViewSource
+        {
+            Html = $$"""
+                <!doctype html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <style>
+                        html, body {
+                            margin: 0;
+                            padding: 0;
+                            background: #102947;
+                            color: #ffffff;
+                            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                            font-size: 24px;
+                            line-height: 1.7;
+                            overflow-x: hidden;
+                        }
+                        body {
+                            padding: 18px 18px 26px;
+                            box-sizing: border-box;
+                        }
+                        p {
+                            margin: 0 0 18px;
+                        }
+                        img {
+                            display: block;
+                            width: auto;
+                            max-width: 100%;
+                            height: auto;
+                            margin: 0 auto 18px;
+                            border-radius: 8px;
+                        }
+                        br {
+                            line-height: 1.2;
+                        }
+                        .empty {
+                            min-height: 220px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            color: #b8d6f5;
+                        }
+                    </style>
+                </head>
+                <body>{{body}}</body>
+                </html>
+                """
+        };
+    }
+
+    private static bool LooksLikeHtml(string value)
+    {
+        return value.Contains('<', StringComparison.Ordinal) &&
+               value.Contains('>', StringComparison.Ordinal);
+    }
+
+    private static string StripOuterHtml(string content)
+    {
+        var html = CleanPlaceholder(content);
+        if (string.IsNullOrWhiteSpace(html))
+        {
+            return string.Empty;
+        }
+
+        html = Regex.Replace(html, @"<!doctype[^>]*>", string.Empty, RegexOptions.IgnoreCase);
+        html = Regex.Replace(html, @"</?html[^>]*>", string.Empty, RegexOptions.IgnoreCase);
+        html = Regex.Replace(html, @"</?body[^>]*>", string.Empty, RegexOptions.IgnoreCase);
+        html = Regex.Replace(html, @"<head[^>]*>.*?</head>", string.Empty, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        return html.Trim();
     }
 
     private static (string SpecName, string OptionName) SplitVariantName(string variantName)
