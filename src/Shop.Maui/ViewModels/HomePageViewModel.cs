@@ -77,14 +77,19 @@ public sealed class HomePageViewModel : ObservableObject
         NavigateToCategoryByIdCommand = new Command<string>(async categoryId =>
         {
             if (string.IsNullOrWhiteSpace(categoryId)) return;
-            var category = Categories.FirstOrDefault(c => string.Equals(c.Id, categoryId, StringComparison.OrdinalIgnoreCase));
-            if (category is not null)
+
+            var parts = categoryId.Split('|', 2, StringSplitOptions.TrimEntries);
+            var targetCategoryId = parts[0];
+            var hasExplicitCategoryName = parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]);
+            var targetCategoryName = hasExplicitCategoryName ? parts[1] : targetCategoryId;
+            var category = Categories.FirstOrDefault(c => string.Equals(c.Id, targetCategoryId, StringComparison.OrdinalIgnoreCase));
+            if (category is not null && !hasExplicitCategoryName)
             {
                 await _navigationService.GoToCategoryWallAsync(category.Id, category.DisplayName);
             }
             else
             {
-                await _navigationService.GoToCategoryWallAsync(categoryId, categoryId);
+                await _navigationService.GoToCategoryWallAsync(targetCategoryId, targetCategoryName);
             }
         });
 

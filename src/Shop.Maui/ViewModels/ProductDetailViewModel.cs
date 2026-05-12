@@ -12,10 +12,9 @@ namespace Shop.Maui.ViewModels;
 public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributable
 {
     private const string ProductDetailBaseUrl =
-        "https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itwid=12105";
+        "https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itjid=12106&itcid=12106";
     private const string ProductDescriptionBaseUrl =
         "https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itwid=05&itcid=12105";
-    private const string ProductDescriptionTestKey = "C055-7";
 
     private static readonly HttpClient HttpClient = new();
 
@@ -25,6 +24,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
     private bool _isInitialized;
     private int _currentColorIndex;
+    private string _requestedProductId = string.Empty;
 
     public ProductListItem Product { get; private set; } = new("", "", "", 0m, null);
 
@@ -141,6 +141,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             return;
         }
 
+        _requestedProductId = productId.Trim();
         Product = new ProductListItem(productId, string.Empty, modelName, salePrice, imageUrl);
         ApplyProductSnapshot(Product, null, null);
         ProductDescriptionSource = CreateDescriptionSource(null, "介绍加载中...");
@@ -153,7 +154,8 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             return;
         }
 
-        var detail = await FetchProductDetailAsync(Product.Id, cancellationToken);
+        var productCode = GetRequestedProductId();
+        var detail = await FetchProductDetailAsync(productCode, cancellationToken);
         if (detail is not null)
         {
             Product = new ProductListItem(
@@ -166,7 +168,9 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             ApplyProductSnapshot(Product, detail.OriginalPriceText, detail.Description);
         }
 
-        var descriptionHtml = await FetchProductDescriptionHtmlAsync(GetProductDescriptionKey(), cancellationToken);
+        var descriptionHtml = detail is null
+            ? string.Empty
+            : await FetchProductDescriptionHtmlAsync(productCode, cancellationToken);
         ProductDescriptionSource = string.IsNullOrWhiteSpace(descriptionHtml)
             ? CreateDescriptionSource(ProductDescriptionText, "暂无介绍")
             : CreateDescriptionSource(descriptionHtml);
@@ -174,7 +178,9 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         var variants = detail?.Variants;
         if (variants is null || variants.Count == 0)
         {
-            variants = await _colorVariantProvider.GetColorVariantsAsync(Product, cancellationToken);
+            variants = detail is null
+                ? Array.Empty<ProductColorVariant>()
+                : await _colorVariantProvider.GetColorVariantsAsync(Product, cancellationToken);
         }
 
         var options = variants
@@ -334,7 +340,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
                 return null;
             }
 
-            using var document = JsonDocument.Parse(json);
+            using var document = JsonDocument.Parse(RepairProductDetailJson(json));
 
             var root = document.RootElement;
             JsonElement data;
@@ -362,7 +368,12 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
                 imageUrl = GetString(data, "\u56fe\u7247");
             }
 
-            return new ProductDetailPayload(
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                imageUrl = GetFirstMainPicture(data);
+            }
+
+            var payload = new ProductDetailPayload(
                 FirstNonEmpty(GetString(data, "code"), GetString(data, "spuCode"), GetString(data, "id")),
                 GetString(data, "name"),
                 ParsePrice(GetString(data, "price")),
@@ -370,6 +381,10 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
                 imageUrl,
                 FirstNonEmpty(GetString(data, "desc"), GetString(data, "info")),
                 BuildSpecVariants(data, imageUrl));
+
+            return IsDetailMatch(productId, payload, data)
+                ? payload
+                : null;
         }
         catch
         {
@@ -418,6 +433,11 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             : content.Trim();
     }
 
+    private static string RepairProductDetailJson(string json)
+    {
+        return Regex.Replace(json, @":\s*,", ": null,");
+    }
+
     private static string GetString(JsonElement element, string propertyName)
     {
         return element.TryGetProperty(propertyName, out var property) &&
@@ -449,6 +469,75 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         }
 
         return string.Empty;
+    }
+
+    private static string GetFirstMainPicture(JsonElement data)
+    {
+        if (!data.TryGetProperty("mainPictures", out var pictures) ||
+            pictures.ValueKind != JsonValueKind.Array)
+        {
+            return string.Empty;
+        }
+
+        foreach (var picture in pictures.EnumerateArray())
+        {
+            if (picture.ValueKind == JsonValueKind.String)
+            {
+                var value = picture.GetString();
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
+            }
+        }
+
+        return string.Empty;
+    }
+
+    private static bool IsDetailMatch(string requestedProductId, ProductDetailPayload payload, JsonElement data)
+    {
+        var requested = NormalizeProductCode(requestedProductId);
+        if (string.IsNullOrWhiteSpace(requested))
+        {
+            return false;
+        }
+
+        var candidates = new List<string?>
+        {
+            payload.Code,
+            GetString(data, "id"),
+            GetString(data, "code"),
+            GetString(data, "spuCode")
+        };
+
+        if (data.TryGetProperty("skus", out var skus) &&
+            skus.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var sku in skus.EnumerateArray())
+            {
+                candidates.Add(GetString(sku, "id"));
+                candidates.Add(GetString(sku, "skuCode"));
+                candidates.Add(GetString(sku, "code"));
+            }
+        }
+
+        return candidates
+            .Select(NormalizeProductCode)
+            .Where(candidate => !string.IsNullOrWhiteSpace(candidate))
+            .Any(candidate =>
+                string.Equals(candidate, requested, StringComparison.OrdinalIgnoreCase) ||
+                candidate.Contains(requested, StringComparison.OrdinalIgnoreCase) ||
+                requested.Contains(candidate, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string NormalizeProductCode(string? value)
+    {
+        return CleanPlaceholder(value)
+            .Trim()
+            .Replace("-", string.Empty, StringComparison.Ordinal)
+            .Replace("_", string.Empty, StringComparison.Ordinal)
+            .Replace(" ", string.Empty, StringComparison.Ordinal)
+            .ToUpperInvariant();
     }
 
     private static IReadOnlyList<ProductColorVariant> BuildSpecVariants(JsonElement data, string fallbackImageUrl)
@@ -516,14 +605,16 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
 
     private string GetProductDescriptionKey()
     {
-        if (!string.IsNullOrWhiteSpace(ProductDescriptionTestKey))
-        {
-            return ProductDescriptionTestKey;
-        }
-
         return string.IsNullOrWhiteSpace(ProductCodeText) || ProductCodeText == "-"
             ? Product.Id
             : ProductCodeText;
+    }
+
+    private string GetRequestedProductId()
+    {
+        return string.IsNullOrWhiteSpace(_requestedProductId)
+            ? GetProductDescriptionKey()
+            : _requestedProductId;
     }
 
     private static WebViewSource CreateDescriptionSource(string? html, string? fallbackText = null)

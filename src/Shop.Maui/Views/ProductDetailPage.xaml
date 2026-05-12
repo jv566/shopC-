@@ -26,9 +26,9 @@
             <AbsoluteLayout WidthRequest="1920"
                             HeightRequest="1080">
 
-                <Button AbsoluteLayout.LayoutBounds="116,84,164,58"
+                <Button AbsoluteLayout.LayoutBounds="24,24,132,52"
                         AbsoluteLayout.LayoutFlags="None"
-                        Text="返回"
+                        Text="&#x2190; &#x8FD4;&#x56DE;"
                         FontSize="24"
                         FontAttributes="Bold"
                         TextColor="White"
@@ -38,7 +38,7 @@
                         CornerRadius="8"
                         Clicked="OnBackClicked" />
 
-                <Border AbsoluteLayout.LayoutBounds="116,172,1688,812"
+                <Border AbsoluteLayout.LayoutBounds="116,86,1688,906"
                         AbsoluteLayout.LayoutFlags="None"
                         StrokeThickness="0"
                         StrokeShape="RoundRectangle 8">

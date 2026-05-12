@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
              xmlns:m="clr-namespace:Shop.Maui.Models"
              xmlns:cvt="clr-namespace:Shop.Maui.Converters"
              x:Class="Shop.Maui.Views.HomePage"
+             x:Name="PageRoot"
              Title="Shop"
              BackgroundColor="#0a1628"
              x:DataType="vm:HomePageViewModel">
@@ -21,7 +22,6 @@
 
         <Grid RowDefinitions="0.147*,0.053*,0.604*,0.114*,0.082*">
 
-            <!-- Row 0: Title Logo -->
             <Grid Grid.Row="0">
                 <Image Source="home_title_logo.png"
                        Aspect="AspectFit"
@@ -30,277 +30,73 @@
                        HeightRequest="80" />
             </Grid>
 
-            <!-- Row 1: Spacer -->
-
-            <!-- Row 2: Main Content -->
             <Grid Grid.Row="2"
                   ColumnDefinitions="0.063*,0.317*,0.497*,0.312*,0.066*">
 
-                <!-- Col 0: Left Spacer -->
-
-                <!-- Col 1: Category Grid (4 rows x 2 cols = 8 items) -->
                 <Grid Grid.Column="1"
                       RowDefinitions="0.227*,0.031*,0.227*,0.031*,0.227*,0.031*,0.227*">
-                    <!-- Row 0 -->
                     <Grid Grid.Row="0" ColumnDefinitions="0.48*,0.04*,0.48*">
                         <Grid Grid.Column="0">
-                            <Image Source="category_badge_background.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   HeightRequest="30" />
-                            <Label Text="床"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   Margin="10,4,0,0"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="White" />
-                            <Image Source="ellipse.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   HeightRequest="30"
-                                   Opacity="0.6" />
-                            <ImageButton Source="category_chair_icon.png"
-                                         Aspect="AspectFit"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="End"
-                                         HeightRequest="50"
-                                         WidthRequest="50"
-                                         BackgroundColor="Transparent"
-                                         Padding="0"
-                                         Command="{Binding NavigateToCategoryByIdCommand}"
-                                         CommandParameter="bed" />
+                            <Image Source="category_badge_background.png" Aspect="AspectFit" HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="30" Margin="-37,0,0,0" />
+                            <Label Text="书桌" HorizontalOptions="Start" VerticalOptions="Start" Margin="-25,4,0,0" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                            <Image Source="ellipse.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="30" Opacity="0.6" />
+                            <ImageButton Source="home_desk.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="66" WidthRequest="90" BackgroundColor="Transparent" Padding="0" Command="{Binding NavigateToCategoryByIdCommand}" CommandParameter="58|书桌" />
                         </Grid>
                         <Grid Grid.Column="2">
-                            <Image Source="category_badge_background.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   HeightRequest="30" />
-                            <Label Text="沙发"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   Margin="10,4,0,0"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="White" />
-                            <Image Source="ellipse.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   HeightRequest="30"
-                                   Opacity="0.6" />
-                            <ImageButton Source="category_chair_icon.png"
-                                         Aspect="AspectFit"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="End"
-                                         HeightRequest="50"
-                                         WidthRequest="50"
-                                         BackgroundColor="Transparent"
-                                         Padding="0"
-                                         Command="{Binding NavigateToCategoryByIdCommand}"
-                                         CommandParameter="sofa" />
+                            <Image Source="category_badge_background.png" Aspect="AspectFit" HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="30" Margin="-27,0,0,0" />
+                            <Label Text="床垫" HorizontalOptions="Start" VerticalOptions="Start" Margin="-10,4,0,0" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                            <Image Source="ellipse.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="30" Opacity="0.6" />
+                            <ImageButton Source="home_mattress.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="66" WidthRequest="90" BackgroundColor="Transparent" Padding="0" Command="{Binding NavigateToCategoryByIdCommand}" CommandParameter="09|床垫" />
                         </Grid>
                     </Grid>
-                    <!-- Row 2 -->
                     <Grid Grid.Row="2" ColumnDefinitions="0.48*,0.04*,0.48*">
                         <Grid Grid.Column="0">
-                            <Image Source="category_badge_background.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   HeightRequest="30" />
-                            <Label Text="桌子"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   Margin="10,4,0,0"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="White" />
-                            <Image Source="ellipse.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   HeightRequest="30"
-                                   Opacity="0.6" />
-                            <ImageButton Source="category_chair_icon.png"
-                                         Aspect="AspectFit"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="End"
-                                         HeightRequest="50"
-                                         WidthRequest="50"
-                                         BackgroundColor="Transparent"
-                                         Padding="0"
-                                         Command="{Binding NavigateToCategoryByIdCommand}"
-                                         CommandParameter="table" />
+                            <Image Source="category_badge_background.png" Aspect="AspectFit" HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="30" Margin="-37,0,0,0" />
+                            <Label Text="餐桌" HorizontalOptions="Start" VerticalOptions="Start" Margin="-25,4,0,0" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                            <Image Source="ellipse.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="30" Opacity="0.6" />
+                            <ImageButton Source="home_dining_table.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="66" WidthRequest="90" BackgroundColor="Transparent" Padding="0" Command="{Binding NavigateToCategoryByIdCommand}" CommandParameter="23|餐桌" />
                         </Grid>
                         <Grid Grid.Column="2">
-                            <Image Source="category_badge_background.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   HeightRequest="30" />
-                            <Label Text="衣柜"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   Margin="10,4,0,0"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="White" />
-                            <Image Source="ellipse.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   HeightRequest="30"
-                                   Opacity="0.6" />
-                            <ImageButton Source="category_chair_icon.png"
-                                         Aspect="AspectFit"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="End"
-                                         HeightRequest="50"
-                                         WidthRequest="50"
-                                         BackgroundColor="Transparent"
-                                         Padding="0"
-                                         Command="{Binding NavigateToCategoryByIdCommand}"
-                                         CommandParameter="wardrobe" />
+                            <Image Source="category_badge_background.png" Aspect="AspectFit" HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="30" Margin="-27,0,0,0" />
+                            <Label Text="茶几" HorizontalOptions="Start" VerticalOptions="Start" Margin="-10,4,0,0" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                            <Image Source="ellipse.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="30" Opacity="0.6" />
+                            <ImageButton Source="home_coffee_table.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="66" WidthRequest="90" BackgroundColor="Transparent" Padding="0" Command="{Binding NavigateToCategoryByIdCommand}" CommandParameter="06|茶几" />
                         </Grid>
                     </Grid>
-                    <!-- Row 4 -->
                     <Grid Grid.Row="4" ColumnDefinitions="0.48*,0.04*,0.48*">
                         <Grid Grid.Column="0">
-                            <Image Source="category_badge_background.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   HeightRequest="30" />
-                            <Label Text="定制柜"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   Margin="8,4,0,0"
-                                   FontSize="11"
-                                   FontAttributes="Bold"
-                                   TextColor="White" />
-                            <Image Source="ellipse.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   HeightRequest="30"
-                                   Opacity="0.6" />
-                            <ImageButton Source="category_chair_icon.png"
-                                         Aspect="AspectFit"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="End"
-                                         HeightRequest="50"
-                                         WidthRequest="50"
-                                         BackgroundColor="Transparent"
-                                         Padding="0"
-                                         Command="{Binding NavigateToCategoryByIdCommand}"
-                                         CommandParameter="custom" />
+                            <Image Source="category_badge_background.png" Aspect="AspectFit" HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="30" Margin="-37,0,0,0" />
+                            <Label Text="床" HorizontalOptions="Start" VerticalOptions="Start" Margin="-25,4,0,0" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                            <Image Source="ellipse.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="30" Opacity="0.6" />
+                            <ImageButton Source="home_bed.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="66" WidthRequest="90" BackgroundColor="Transparent" Padding="0" Command="{Binding NavigateToCategoryByIdCommand}" CommandParameter="bed|床" />
                         </Grid>
                         <Grid Grid.Column="2">
-                            <Image Source="category_badge_background.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   HeightRequest="30" />
-                            <Label Text="床"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   Margin="10,4,0,0"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="White" />
-                            <Image Source="ellipse.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   HeightRequest="30"
-                                   Opacity="0.6" />
-                            <ImageButton Source="category_chair_icon.png"
-                                         Aspect="AspectFit"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="End"
-                                         HeightRequest="50"
-                                         WidthRequest="50"
-                                         BackgroundColor="Transparent"
-                                         Padding="0"
-                                         Command="{Binding NavigateToCategoryByIdCommand}"
-                                         CommandParameter="bed" />
+                            <Image Source="category_badge_background.png" Aspect="AspectFit" HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="30" Margin="-27,0,0,0" />
+                            <Label Text="书柜" HorizontalOptions="Start" VerticalOptions="Start" Margin="-10,4,0,0" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                            <Image Source="ellipse.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="30" Opacity="0.6" />
+                            <ImageButton Source="home_bookcase.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="66" WidthRequest="90" BackgroundColor="Transparent" Padding="0" Command="{Binding NavigateToCategoryByIdCommand}" CommandParameter="39|书柜" />
                         </Grid>
                     </Grid>
-                    <!-- Row 6 -->
                     <Grid Grid.Row="6" ColumnDefinitions="0.48*,0.04*,0.48*">
                         <Grid Grid.Column="0">
-                            <Image Source="category_badge_background.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   HeightRequest="30" />
-                            <Label Text="沙发"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   Margin="10,4,0,0"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="White" />
-                            <Image Source="ellipse.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   HeightRequest="30"
-                                   Opacity="0.6" />
-                            <ImageButton Source="category_chair_icon.png"
-                                         Aspect="AspectFit"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="End"
-                                         HeightRequest="50"
-                                         WidthRequest="50"
-                                         BackgroundColor="Transparent"
-                                         Padding="0"
-                                         Command="{Binding NavigateToCategoryByIdCommand}"
-                                         CommandParameter="sofa" />
+                            <Image Source="category_badge_background.png" Aspect="AspectFit" HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="30" Margin="-37,0,0,0" />
+                            <Label Text="沙发" HorizontalOptions="Start" VerticalOptions="Start" Margin="-25,4,0,0" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                            <Image Source="ellipse.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="30" Opacity="0.6" />
+                            <ImageButton Source="home_sofa.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="66" WidthRequest="90" BackgroundColor="Transparent" Padding="0" Command="{Binding NavigateToCategoryByIdCommand}" CommandParameter="sofa|沙发" />
                         </Grid>
                         <Grid Grid.Column="2">
-                            <Image Source="category_badge_background.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   HeightRequest="30" />
-                            <Label Text="桌子"
-                                   HorizontalOptions="Start"
-                                   VerticalOptions="Start"
-                                   Margin="10,4,0,0"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   TextColor="White" />
-                            <Image Source="ellipse.png"
-                                   Aspect="AspectFit"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   HeightRequest="30"
-                                   Opacity="0.6" />
-                            <ImageButton Source="category_chair_icon.png"
-                                         Aspect="AspectFit"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="End"
-                                         HeightRequest="50"
-                                         WidthRequest="50"
-                                         BackgroundColor="Transparent"
-                                         Padding="0"
-                                         Command="{Binding NavigateToCategoryByIdCommand}"
-                                         CommandParameter="table" />
+                            <Image Source="category_badge_background.png" Aspect="AspectFit" HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="30" Margin="-27,0,0,0" />
+                            <Label Text="斗柜" HorizontalOptions="Start" VerticalOptions="Start" Margin="-10,4,0,0" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                            <Image Source="ellipse.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="30" Opacity="0.6" />
+                            <ImageButton Source="home_sideboard.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="End" HeightRequest="66" WidthRequest="90" BackgroundColor="Transparent" Padding="0" Command="{Binding NavigateToCategoryByIdCommand}" CommandParameter="36|斗柜" />
                         </Grid>
                     </Grid>
                 </Grid>
 
-                <!-- Col 2: Carousel + Sub-cards -->
                 <Grid Grid.Column="2"
                       RowDefinitions="0.7*,0.3*"
                       Margin="12,0,12,0">
 
-                    <!-- Carousel -->
                     <Border Grid.Row="0"
                             StrokeShape="RoundRectangle 10"
                             Margin="10,0,10,0">
@@ -378,12 +174,10 @@
                         </Grid>
                     </Border>
 
-                    <!-- Sub-cards -->
                     <Grid Grid.Row="1"
                           ColumnDefinitions="*,20,*"
                           Margin="0,6,0,0">
 
-                        <!-- Left sub-card -->
                         <Border Grid.Column="0"
                                 StrokeShape="RoundRectangle 5"
                                 Padding="20"
@@ -415,7 +209,6 @@
                             </Grid>
                         </Border>
 
-                        <!-- Right sub-card -->
                         <Border Grid.Column="2"
                                 StrokeShape="RoundRectangle 5"
                                 Padding="20"
@@ -449,12 +242,10 @@
                     </Grid>
                 </Grid>
 
-                <!-- Col 3: Right Feature Cards -->
                 <Grid Grid.Column="3"
                       RowDefinitions="1*,1*"
                       Margin="0,0,0,20">
 
-                    <!-- 3D Preview Card -->
                     <Grid Grid.Row="0"
                           Margin="0,0,0,12">
                         <Image Source="ellipse.png"
@@ -476,7 +267,6 @@
                                      Command="{Binding NavigateTo3DShowcaseCommand}" />
                     </Grid>
 
-                    <!-- VR Preview Card -->
                     <Grid Grid.Row="1">
                         <Image Source="home_vr_preview_room.png"
                                Aspect="AspectFit"
@@ -492,15 +282,11 @@
                                      Command="{Binding NavigateToPanoramaCommand}" />
                     </Grid>
                 </Grid>
-
-                <!-- Col 4: Right Spacer -->
             </Grid>
 
-            <!-- Row 3: Bottom Buttons -->
             <Grid Grid.Row="3"
                   ColumnDefinitions="0.063*,0.888*,0.006*,0.352*,0.066*">
 
-                <!-- Left buttons: cart, my-orders, history-orders, qr-sync -->
                 <Grid Grid.Column="1"
                       ColumnDefinitions="0.2*,0.03*,0.2*,0.03*,0.2*,0.03*,0.2*">
                     <ImageButton Grid.Column="0"
@@ -533,7 +319,6 @@
                                  Command="{Binding SyncQrCommand}" />
                 </Grid>
 
-                <!-- Right icon buttons: vr-library, effect-gallery, floorplan-library, ai-image -->
                 <Grid Grid.Column="3"
                       ColumnDefinitions="0.25*,0.25*,0.25*,0.25*">
                     <ImageButton Grid.Column="0"
@@ -563,9 +348,8 @@
                                  BackgroundColor="Transparent" />
                 </Grid>
             </Grid>
-
-            <!-- Row 4: Bottom Spacer -->
         </Grid>
     </Grid>
 
 </ContentPage>
+
