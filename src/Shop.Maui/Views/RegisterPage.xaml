@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
+             x:Class="Shop.Maui.Views.RegisterPage"
+             Title="注册"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#071629"
+             x:DataType="vm:RegisterViewModel">
+
+    <Grid x:Name="Viewport"
+          SizeChanged="OnViewportSizeChanged">
+        <Grid x:Name="DesignRoot"
+              WidthRequest="1920"
+              HeightRequest="1080"
+              HorizontalOptions="Start"
+              VerticalOptions="Start"
+              AnchorX="0"
+              AnchorY="0">
+
+            <Image Source="common_bg.png"
+                   Aspect="Fill" />
+
+            <Grid ColumnDefinitions="1.05*,0.95*"
+                  Padding="160,120">
+                <VerticalStackLayout Grid.Column="0"
+                                     Spacing="26"
+                                     VerticalOptions="Center">
+                    <Label Text="Hello!"
+                           TextColor="White"
+                           FontSize="82"
+                           FontAttributes="Bold" />
+                    <Label Text="创建账号后即可进入商品展示与订单系统"
+                           TextColor="#D7ECFF"
+                           FontSize="32"
+                           FontAttributes="Bold" />
+                </VerticalStackLayout>
+
+                <Border Grid.Column="1"
+                        WidthRequest="620"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        Padding="52,46"
+                        Stroke="#66B8D6F5"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 42"
+                        BackgroundColor="#B02A2946">
+                    <VerticalStackLayout Spacing="24">
+                        <Label Text="注册"
+                               TextColor="White"
+                               FontSize="48"
+                               FontAttributes="Bold" />
+
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="账号"
+                                   TextColor="White"
+                                   FontSize="22"
+                                   FontAttributes="Bold" />
+                            <Entry Text="{Binding Account}"
+                                   Placeholder="请输入账号 / 手机号"
+                                   TextColor="White"
+                                   PlaceholderColor="#9EB4D4"
+                                   FontSize="22"
+                                   HeightRequest="58"
+                                   BackgroundColor="#22132642" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="密码"
+                                   TextColor="White"
+                                   FontSize="22"
+                                   FontAttributes="Bold" />
+                            <Entry Text="{Binding Password}"
+                                   Placeholder="请输入密码"
+                                   IsPassword="True"
+                                   TextColor="White"
+                                   PlaceholderColor="#9EB4D4"
+                                   FontSize="22"
+                                   HeightRequest="58"
+                                   BackgroundColor="#22132642" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="确认密码"
+                                   TextColor="White"
+                                   FontSize="22"
+                                   FontAttributes="Bold" />
+                            <Entry Text="{Binding ConfirmPassword}"
+                                   Placeholder="请再次输入密码"
+                                   IsPassword="True"
+                                   TextColor="White"
+                                   PlaceholderColor="#9EB4D4"
+                                   FontSize="22"
+                                   HeightRequest="58"
+                                   BackgroundColor="#22132642" />
+                        </VerticalStackLayout>
+
+                        <Button Text="注册"
+                                Command="{Binding RegisterCommand}"
+                                HeightRequest="72"
+                                FontSize="30"
+                                FontAttributes="Bold"
+                                TextColor="#071629"
+                                BackgroundColor="#D9EEFF"
+                                CornerRadius="36" />
+
+                        <Button Text="返回登录"
+                                Command="{Binding GoToLoginCommand}"
+                                FontSize="22"
+                                TextColor="#18F7FF"
+                                BackgroundColor="Transparent" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

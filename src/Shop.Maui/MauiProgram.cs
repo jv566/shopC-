@@ -90,6 +90,10 @@ public static class MauiProgram
             IUserActionService,
             MockUserActionService>();
 
+        builder.Services.AddSingleton<
+            IAuthService,
+            LocalAuthService>();
+
         // =========================
         // 注册 ViewModel
         // =========================
@@ -109,6 +113,8 @@ public static class MauiProgram
         builder.Services.AddTransient<CartViewModel>();
         builder.Services.AddTransient<MyOrdersViewModel>();
         builder.Services.AddTransient<HistoryOrdersViewModel>();
+        builder.Services.AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<RegisterViewModel>();
 
         // =========================
         // 注册页面（Views）
@@ -132,6 +138,9 @@ public static class MauiProgram
         builder.Services.AddTransient<CartPage>();
         builder.Services.AddTransient<MyOrdersPage>();
         builder.Services.AddTransient<HistoryOrdersPage>();
+        builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<RegisterPage>();
+        builder.Services.AddTransient<AppShell>();
 
         // 构建整个 App
         // 所有服务、页面、ViewModel 都组装完成

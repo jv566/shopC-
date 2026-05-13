@@ -1,10 +1,11 @@
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Shop.Maui;
 
 public partial class App : Microsoft.Maui.Controls.Application
 {
-    public App()
+    public App(IServiceProvider serviceProvider)
     {
         try
         {
@@ -17,11 +18,11 @@ public partial class App : Microsoft.Maui.Controls.Application
 
         try
         {
-            MainPage = new AppShell();
+            MainPage = serviceProvider.GetRequiredService<Views.LoginPage>();
         }
         catch (Exception ex)
         {
-            LogError("AppShell", ex);
+            LogError("LoginPage", ex);
         }
     }
 

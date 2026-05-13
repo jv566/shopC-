@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Shop.Maui.Models;
 using Shop.Maui.Services;
+using Shop.Maui.Views;
 
 namespace Shop.Maui.ViewModels;
 
@@ -11,6 +13,7 @@ public sealed class HomePageViewModel : ObservableObject
     private readonly IHomeCarouselProvider _carouselProvider;
     private readonly INavigationService _navigationService;
     private readonly IUserActionService _userActionService;
+    private readonly IServiceProvider _serviceProvider;
 
     private bool _isInitialized;
     private int _currentBannerIndex;
@@ -60,6 +63,7 @@ public sealed class HomePageViewModel : ObservableObject
     public ICommand OpenMyOrdersCommand { get; }
     public ICommand OpenHistoryOrdersCommand { get; }
     public ICommand SyncQrCommand { get; }
+    public ICommand LogoutCommand { get; }
     public ICommand NextBannerCommand { get; }
     public ICommand PrevBannerCommand { get; }
 
@@ -67,12 +71,14 @@ public sealed class HomePageViewModel : ObservableObject
         IProductCategoryProvider categoryProvider,
         IHomeCarouselProvider carouselProvider,
         INavigationService navigationService,
-        IUserActionService userActionService)
+        IUserActionService userActionService,
+        IServiceProvider serviceProvider)
     {
         _categoryProvider = categoryProvider;
         _carouselProvider = carouselProvider;
         _navigationService = navigationService;
         _userActionService = userActionService;
+        _serviceProvider = serviceProvider;
 
         NavigateToCategoryByIdCommand = new Command<string>(async categoryId =>
         {
@@ -99,6 +105,7 @@ public sealed class HomePageViewModel : ObservableObject
         OpenMyOrdersCommand = new Command(async () => await _navigationService.GoToMyOrdersAsync());
         OpenHistoryOrdersCommand = new Command(async () => await _navigationService.GoToHistoryOrdersAsync());
         SyncQrCommand = new Command(async () => await ShowActionResultAsync(_userActionService.SyncQrAsync()));
+        LogoutCommand = new Command(Logout);
 
         NextBannerCommand = new Command(() =>
         {
@@ -173,6 +180,14 @@ public sealed class HomePageViewModel : ObservableObject
         if (Shell.Current is not null)
         {
             await Shell.Current.DisplayAlert(result.Title, result.Message, "确定");
+        }
+    }
+
+    private void Logout()
+    {
+        if (Microsoft.Maui.Controls.Application.Current is not null)
+        {
+            Microsoft.Maui.Controls.Application.Current.MainPage = _serviceProvider.GetRequiredService<LoginPage>();
         }
     }
 }
