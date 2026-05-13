@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Shop.Maui.ViewModels"
+             xmlns:m="clr-namespace:Shop.Maui.Models"
+             x:Class="Shop.Maui.Views.CartPage"
+             x:Name="PageRoot"
+             Title="购物车"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#071629"
+             x:DataType="vm:CartViewModel">
+
+    <Grid x:Name="Viewport"
+          SizeChanged="OnViewportSizeChanged">
+        <Grid x:Name="DesignRoot"
+              WidthRequest="1920"
+              HeightRequest="1080"
+              HorizontalOptions="Start"
+              VerticalOptions="Start"
+              AnchorX="0"
+              AnchorY="0">
+
+            <Image Source="common_bg.png"
+                   Aspect="Fill" />
+
+            <AbsoluteLayout WidthRequest="1920"
+                            HeightRequest="1080">
+
+                <Button AbsoluteLayout.LayoutBounds="24,24,132,52"
+                        AbsoluteLayout.LayoutFlags="None"
+                        Text="← 返回"
+                        FontSize="24"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        BackgroundColor="#315F98"
+                        BorderColor="#18F7FF"
+                        BorderWidth="1"
+                        CornerRadius="8"
+                        Clicked="OnBackClicked" />
+
+                <Label AbsoluteLayout.LayoutBounds="116,88,1688,64"
+                       AbsoluteLayout.LayoutFlags="None"
+                       Text="购物车"
+                       TextColor="White"
+                       FontSize="42"
+                       FontAttributes="Bold"
+                       VerticalTextAlignment="Center" />
+
+                <Border AbsoluteLayout.LayoutBounds="116,174,1688,730"
+                        AbsoluteLayout.LayoutFlags="None"
+                        Stroke="#3B73AA"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 8"
+                        BackgroundColor="#CC102947"
+                        Padding="28">
+                    <Grid>
+                        <CollectionView ItemsSource="{Binding Items}"
+                                        IsVisible="{Binding HasItems}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="m:CartLineItem">
+                                    <Border Margin="0,0,0,18"
+                                            Padding="22"
+                                            Stroke="#2F669B"
+                                            StrokeThickness="1"
+                                            StrokeShape="RoundRectangle 8"
+                                            BackgroundColor="#66132642">
+                                        <Grid ColumnDefinitions="156,*,180,120,180"
+                                              ColumnSpacing="24"
+                                              HeightRequest="132">
+                                            <Border Grid.Column="0"
+                                                    StrokeThickness="0"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    BackgroundColor="#EAF4FF">
+                                                <Image Source="{Binding ImageUrl}"
+                                                       Aspect="AspectFit" />
+                                            </Border>
+
+                                            <VerticalStackLayout Grid.Column="1"
+                                                                 Spacing="10"
+                                                                 VerticalOptions="Center">
+                                                <Label Text="{Binding ModelName}"
+                                                       FontSize="28"
+                                                       FontAttributes="Bold"
+                                                       TextColor="White"
+                                                       MaxLines="1"
+                                                       LineBreakMode="TailTruncation" />
+                                                <Label Text="{Binding ProductId}"
+                                                       FontSize="20"
+                                                       TextColor="#B8D6F5"
+                                                       MaxLines="1"
+                                                       LineBreakMode="TailTruncation" />
+                                            </VerticalStackLayout>
+
+                                            <Label Grid.Column="2"
+                                                   Text="{Binding UnitPriceText}"
+                                                   FontSize="26"
+                                                   TextColor="#18F7FF"
+                                                   FontAttributes="Bold"
+                                                   VerticalTextAlignment="Center"
+                                                   HorizontalTextAlignment="End" />
+
+                                            <Label Grid.Column="3"
+                                                   Text="{Binding QuantityText}"
+                                                   FontSize="24"
+                                                   TextColor="#D7ECFF"
+                                                   FontAttributes="Bold"
+                                                   VerticalTextAlignment="Center"
+                                                   HorizontalTextAlignment="Center" />
+
+                                            <Label Grid.Column="4"
+                                                   Text="{Binding SubtotalText}"
+                                                   FontSize="28"
+                                                   TextColor="White"
+                                                   FontAttributes="Bold"
+                                                   VerticalTextAlignment="Center"
+                                                   HorizontalTextAlignment="End" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <VerticalStackLayout IsVisible="{Binding IsEmpty}"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center"
+                                             Spacing="18">
+                            <Label Text="购物车为空"
+                                   TextColor="White"
+                                   FontSize="36"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="从商品详情页加入商品后会显示在这里"
+                                   TextColor="#B8D6F5"
+                                   FontSize="24"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <Border AbsoluteLayout.LayoutBounds="116,926,1688,100"
+                        AbsoluteLayout.LayoutFlags="None"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 8"
+                        BackgroundColor="#E6315F98"
+                        Padding="32,0">
+                    <Grid ColumnDefinitions="*,Auto,220"
+                          ColumnSpacing="28">
+                        <Label Grid.Column="0"
+                               Text="{Binding ItemCountText}"
+                               TextColor="#D7ECFF"
+                               FontSize="26"
+                               FontAttributes="Bold"
+                               VerticalTextAlignment="Center" />
+                        <Label Grid.Column="1"
+                               Text="合计"
+                               TextColor="White"
+                               FontSize="30"
+                               FontAttributes="Bold"
+                               VerticalTextAlignment="Center" />
+                        <Label Grid.Column="2"
+                               Text="{Binding TotalAmountText}"
+                               TextColor="#18F7FF"
+                               FontSize="34"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="End"
+                               VerticalTextAlignment="Center" />
+                    </Grid>
+                </Border>
+            </AbsoluteLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

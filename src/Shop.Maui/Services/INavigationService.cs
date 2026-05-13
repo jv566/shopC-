@@ -11,4 +11,10 @@ public interface INavigationService
     Task GoToProductPanoramaAsync();
 
     Task GoToProduct3DShowcaseAsync();
+
+    Task GoToCartAsync();
+
+    Task GoToMyOrdersAsync();
+
+    Task GoToHistoryOrdersAsync();
 }

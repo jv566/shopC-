@@ -14,5 +14,11 @@ public interface IUserActionService
 
     Task<UserActionResult> GetHistoryOrdersSummaryAsync(CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<CartLineItem>> GetCartItemsAsync(CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<OrderListItem>> GetMyOrdersAsync(CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<OrderListItem>> GetHistoryOrdersAsync(CancellationToken cancellationToken = default);
+
     Task<UserActionResult> SyncQrAsync(CancellationToken cancellationToken = default);
 }

@@ -95,9 +95,9 @@ public sealed class HomePageViewModel : ObservableObject
 
         NavigateToPanoramaCommand = new Command(async () => await _navigationService.GoToProductPanoramaAsync());
         NavigateTo3DShowcaseCommand = new Command(async () => await _navigationService.GoToProduct3DShowcaseAsync());
-        OpenCartCommand = new Command(async () => await ShowActionResultAsync(_userActionService.GetCartSummaryAsync()));
-        OpenMyOrdersCommand = new Command(async () => await ShowActionResultAsync(_userActionService.GetMyOrdersSummaryAsync()));
-        OpenHistoryOrdersCommand = new Command(async () => await ShowActionResultAsync(_userActionService.GetHistoryOrdersSummaryAsync()));
+        OpenCartCommand = new Command(async () => await _navigationService.GoToCartAsync());
+        OpenMyOrdersCommand = new Command(async () => await _navigationService.GoToMyOrdersAsync());
+        OpenHistoryOrdersCommand = new Command(async () => await _navigationService.GoToHistoryOrdersAsync());
         SyncQrCommand = new Command(async () => await ShowActionResultAsync(_userActionService.SyncQrAsync()));
 
         NextBannerCommand = new Command(() =>

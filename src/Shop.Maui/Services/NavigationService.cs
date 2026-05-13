@@ -26,4 +26,19 @@ public sealed class NavigationService : INavigationService
     {
         await Shell.Current.GoToAsync("showcase3d");
     }
+
+    public async Task GoToCartAsync()
+    {
+        await Shell.Current.GoToAsync("cart");
+    }
+
+    public async Task GoToMyOrdersAsync()
+    {
+        await Shell.Current.GoToAsync("myorders");
+    }
+
+    public async Task GoToHistoryOrdersAsync()
+    {
+        await Shell.Current.GoToAsync("historyorders");
+    }
 }

@@ -27,6 +27,21 @@
                       Route="home" />
     </FlyoutItem>
 
+    <FlyoutItem Title="购物车">
+        <ShellContent ContentTemplate="{DataTemplate local:CartPage}"
+                      Route="cart" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="我的订单">
+        <ShellContent ContentTemplate="{DataTemplate local:MyOrdersPage}"
+                      Route="myorders" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="历史订单">
+        <ShellContent ContentTemplate="{DataTemplate local:HistoryOrdersPage}"
+                      Route="historyorders" />
+    </FlyoutItem>
+
     <FlyoutItem Title="VR 全景">
         <ShellContent ContentTemplate="{DataTemplate local:PanoramaPage}"
                       Route="panorama" />
@@ -36,7 +51,5 @@
         <ShellContent ContentTemplate="{DataTemplate local:Showcase3DPage}"
                       Route="showcase3d" />
     </FlyoutItem>
-
-
 
 </Shell>

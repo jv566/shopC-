@@ -133,7 +133,7 @@
                                 <Grid Grid.Row="0"
                                       ColumnDefinitions="*,Auto">
                                     <Label Grid.Column="0"
-                                           Text="鍟嗗搧绫诲瀷閫夋嫨"
+                                           Text="类型"
                                            TextColor="White"
                                            FontSize="28"
                                            FontAttributes="Bold" />
