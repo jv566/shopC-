@@ -12,6 +12,7 @@ public sealed class AuthSession : IAuthSession
     {
         Phone = phone;
         ItsId = itsId;
+        Console.WriteLine($"SetLoginSession: {phone}, {itsId}");
     }
 
     public void Clear()

@@ -6,11 +6,11 @@ namespace Shop.Maui.Services;
 public sealed class HttpAuthService : IAuthService
 {
     private const string AccountType = "子女端账号";
-    private const string LoginUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=116&mbid=10300";
-    private const string SendRegisterCodeUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=116&mbid=10326";
-    private const string RegisterUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=116&mbid=10311";
-    private const string SendResetPasswordCodeUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=116&mbid=1236";
-    private const string ResetPasswordUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=116&mbid=11608";
+    private const string LoginUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=121&mbid=10300";
+    private const string SendRegisterCodeUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=121&mbid=10326";
+    private const string RegisterUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=121&mbid=10311";
+    private const string SendResetPasswordCodeUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=121&mbid=1236";
+    private const string ResetPasswordUrl = "https://www.zyyai.com.cn/jy/go/phone.aspx?ituid=121&mbid=11608";
 
     private readonly IAuthSession _authSession;
     private readonly HttpClient _httpClient = new()
@@ -38,8 +38,6 @@ public sealed class HttpAuthService : IAuthService
 
         if (result.Succeeded && !string.IsNullOrWhiteSpace(result.ItsId))
         {
-            // 登录接口返回的 itsid 是后续用户态接口的关键身份字段。
-            // 下单、我的订单、历史订单等接口对接后，应从 IAuthSession.ItsId 读取并随请求上传。
             _authSession.SetLoginSession(normalizedPhone, result.ItsId);
         }
 
@@ -124,15 +122,14 @@ public sealed class HttpAuthService : IAuthService
         {
             using var response = await _httpClient.PostAsJsonAsync(url, payload, cancellationToken);
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
+            var itsId = ExtractItsId(body);
+
             if (!response.IsSuccessStatusCode)
             {
-                return new AuthResult(false, ExtractMessage(body, $"请求失败：{response.StatusCode}"), ExtractItsId(body));
+                return new AuthResult(false, ExtractMessage(body, $"请求失败：{response.StatusCode}"), itsId);
             }
 
-            var itsId = ExtractItsId(body);
-            return LooksSuccessful(body)
-                ? new AuthResult(true, ExtractMessage(body, successMessage), itsId)
-                : new AuthResult(false, ExtractMessage(body, "操作失败，请检查输入后重试。"), itsId);
+            return new AuthResult(true, ExtractMessage(body, successMessage), itsId);
         }
         catch (Exception ex)
         {
