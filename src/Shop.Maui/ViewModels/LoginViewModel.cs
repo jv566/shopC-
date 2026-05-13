@@ -9,14 +9,15 @@ public sealed class LoginViewModel : ObservableObject
 {
     private readonly IAuthService _authService;
     private readonly IServiceProvider _serviceProvider;
-    private string _account;
-    private string _password;
+    private string _phone = string.Empty;
+    private string _password = string.Empty;
     private bool _rememberAccount = true;
+    private bool _isBusy;
 
-    public string Account
+    public string Phone
     {
-        get => _account;
-        set => SetProperty(ref _account, value);
+        get => _phone;
+        set => SetProperty(ref _phone, value);
     }
 
     public string Password
@@ -31,31 +32,43 @@ public sealed class LoginViewModel : ObservableObject
         set => SetProperty(ref _rememberAccount, value);
     }
 
+    public bool IsBusy
+    {
+        get => _isBusy;
+        private set => SetProperty(ref _isBusy, value);
+    }
+
     public ICommand LoginCommand { get; }
 
     public ICommand GoToRegisterCommand { get; }
+
+    public ICommand GoToResetPasswordCommand { get; }
 
     public LoginViewModel(IAuthService authService, IServiceProvider serviceProvider)
     {
         _authService = authService;
         _serviceProvider = serviceProvider;
-        _account = authService.DefaultUserName;
-        _password = authService.DefaultPassword;
 
         LoginCommand = new Command(async () => await LoginAsync());
         GoToRegisterCommand = new Command(GoToRegister);
+        GoToResetPasswordCommand = new Command(GoToResetPassword);
     }
 
     private async Task LoginAsync()
     {
-        var success = await _authService.LoginAsync(Account, Password);
-        if (!success)
+        if (string.IsNullOrWhiteSpace(Phone) || string.IsNullOrWhiteSpace(Password))
         {
-            if (Microsoft.Maui.Controls.Application.Current?.MainPage is not null)
-            {
-                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert("登录失败", "账号或密码不正确。", "确定");
-            }
+            await ShowAlertAsync("登录失败", "请输入手机号和密码。");
+            return;
+        }
 
+        IsBusy = true;
+        var result = await _authService.LoginAsync(Phone, Password);
+        IsBusy = false;
+
+        if (!result.Succeeded)
+        {
+            await ShowAlertAsync("登录失败", result.Message);
             return;
         }
 
@@ -70,6 +83,22 @@ public sealed class LoginViewModel : ObservableObject
         if (Microsoft.Maui.Controls.Application.Current is not null)
         {
             Microsoft.Maui.Controls.Application.Current.MainPage = _serviceProvider.GetRequiredService<RegisterPage>();
+        }
+    }
+
+    private void GoToResetPassword()
+    {
+        if (Microsoft.Maui.Controls.Application.Current is not null)
+        {
+            Microsoft.Maui.Controls.Application.Current.MainPage = _serviceProvider.GetRequiredService<ResetPasswordPage>();
+        }
+    }
+
+    private static async Task ShowAlertAsync(string title, string message)
+    {
+        if (Microsoft.Maui.Controls.Application.Current?.MainPage is not null)
+        {
+            await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(title, message, "确定");
         }
     }
 }

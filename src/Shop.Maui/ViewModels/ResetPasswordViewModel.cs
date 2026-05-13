@@ -5,7 +5,7 @@ using Shop.Maui.Views;
 
 namespace Shop.Maui.ViewModels;
 
-public sealed class RegisterViewModel : ObservableObject
+public sealed class ResetPasswordViewModel : ObservableObject
 {
     private readonly IAuthService _authService;
     private readonly IServiceProvider _serviceProvider;
@@ -47,16 +47,16 @@ public sealed class RegisterViewModel : ObservableObject
 
     public ICommand SendCodeCommand { get; }
 
-    public ICommand RegisterCommand { get; }
+    public ICommand ResetPasswordCommand { get; }
 
     public ICommand GoToLoginCommand { get; }
 
-    public RegisterViewModel(IAuthService authService, IServiceProvider serviceProvider)
+    public ResetPasswordViewModel(IAuthService authService, IServiceProvider serviceProvider)
     {
         _authService = authService;
         _serviceProvider = serviceProvider;
         SendCodeCommand = new Command(async () => await SendCodeAsync());
-        RegisterCommand = new Command(async () => await RegisterAsync());
+        ResetPasswordCommand = new Command(async () => await ResetPasswordAsync());
         GoToLoginCommand = new Command(GoToLogin);
     }
 
@@ -69,27 +69,27 @@ public sealed class RegisterViewModel : ObservableObject
         }
 
         IsBusy = true;
-        var result = await _authService.SendRegisterCodeAsync(Phone);
+        var result = await _authService.SendResetPasswordCodeAsync(Phone);
         IsBusy = false;
         await ShowAlertAsync(result.Succeeded ? "验证码" : "发送失败", result.Message);
     }
 
-    private async Task RegisterAsync()
+    private async Task ResetPasswordAsync()
     {
         if (string.IsNullOrWhiteSpace(Phone) ||
             string.IsNullOrWhiteSpace(Password) ||
             string.IsNullOrWhiteSpace(CheckCode) ||
             !string.Equals(Password, ConfirmPassword, StringComparison.Ordinal))
         {
-            await ShowAlertAsync("注册失败", "请填写手机号、密码、验证码，并确认两次密码一致。");
+            await ShowAlertAsync("修改失败", "请填写手机号、验证码、新密码，并确认两次密码一致。");
             return;
         }
 
         IsBusy = true;
-        var result = await _authService.RegisterAsync(Phone, Password, ConfirmPassword, CheckCode);
+        var result = await _authService.ResetPasswordAsync(Phone, Password, ConfirmPassword, CheckCode);
         IsBusy = false;
 
-        await ShowAlertAsync(result.Succeeded ? "注册成功" : "注册失败", result.Message);
+        await ShowAlertAsync(result.Succeeded ? "修改成功" : "修改失败", result.Message);
         if (result.Succeeded)
         {
             GoToLogin();

@@ -4,6 +4,8 @@ namespace Shop.Maui.Services;
 
 public sealed class MockUserActionService : IUserActionService
 {
+    // TODO: 购物车下单、我的订单、历史订单接真实后端时，不要再使用本地 mock 数据。
+    // 这些用户态接口需要从 IAuthSession.ItsId 读取登录接口返回的 itsid，并随请求上传给后端。
     private readonly List<ProductListItem> _cartItems = [];
     private readonly List<OrderListItem> _myOrders =
     [

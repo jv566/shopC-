@@ -92,7 +92,11 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<
             IAuthService,
-            LocalAuthService>();
+            HttpAuthService>();
+
+        builder.Services.AddSingleton<
+            IAuthSession,
+            AuthSession>();
 
         // =========================
         // 注册 ViewModel
@@ -115,6 +119,7 @@ public static class MauiProgram
         builder.Services.AddTransient<HistoryOrdersViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
+        builder.Services.AddTransient<ResetPasswordViewModel>();
 
         // =========================
         // 注册页面（Views）
@@ -140,6 +145,7 @@ public static class MauiProgram
         builder.Services.AddTransient<HistoryOrdersPage>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegisterPage>();
+        builder.Services.AddTransient<ResetPasswordPage>();
         builder.Services.AddTransient<AppShell>();
 
         // 构建整个 App

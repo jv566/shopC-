@@ -14,6 +14,7 @@ public sealed class HomePageViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     private readonly IUserActionService _userActionService;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IAuthSession _authSession;
 
     private bool _isInitialized;
     private int _currentBannerIndex;
@@ -72,13 +73,15 @@ public sealed class HomePageViewModel : ObservableObject
         IHomeCarouselProvider carouselProvider,
         INavigationService navigationService,
         IUserActionService userActionService,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IAuthSession authSession)
     {
         _categoryProvider = categoryProvider;
         _carouselProvider = carouselProvider;
         _navigationService = navigationService;
         _userActionService = userActionService;
         _serviceProvider = serviceProvider;
+        _authSession = authSession;
 
         NavigateToCategoryByIdCommand = new Command<string>(async categoryId =>
         {
@@ -185,6 +188,7 @@ public sealed class HomePageViewModel : ObservableObject
 
     private void Logout()
     {
+        _authSession.Clear();
         if (Microsoft.Maui.Controls.Application.Current is not null)
         {
             Microsoft.Maui.Controls.Application.Current.MainPage = _serviceProvider.GetRequiredService<LoginPage>();

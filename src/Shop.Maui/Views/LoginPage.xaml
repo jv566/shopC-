@@ -8,8 +8,7 @@
              BackgroundColor="#071629"
              x:DataType="vm:LoginViewModel">
 
-    <Grid x:Name="Viewport"
-          SizeChanged="OnViewportSizeChanged">
+    <Grid x:Name="Viewport" SizeChanged="OnViewportSizeChanged">
         <Grid x:Name="DesignRoot"
               WidthRequest="1920"
               HeightRequest="1080"
@@ -17,26 +16,13 @@
               VerticalOptions="Start"
               AnchorX="0"
               AnchorY="0">
+            <Image Source="common_bg.png" Aspect="Fill" />
 
-            <Image Source="common_bg.png"
-                   Aspect="Fill" />
-
-            <Grid ColumnDefinitions="1.05*,0.95*"
-                  Padding="160,120">
-                <VerticalStackLayout Grid.Column="0"
-                                     Spacing="26"
-                                     VerticalOptions="Center">
-                    <Label Text="Hello!"
-                           TextColor="White"
-                           FontSize="82"
-                           FontAttributes="Bold" />
-                    <Label Text="欢迎使用软体 AI 服务平台"
-                           TextColor="#D7ECFF"
-                           FontSize="34"
-                           FontAttributes="Bold" />
-                    <Label Text="默认账号：admin / 123456"
-                           TextColor="#8FEFFF"
-                           FontSize="24" />
+            <Grid ColumnDefinitions="1.05*,0.95*" Padding="160,120">
+                <VerticalStackLayout Grid.Column="0" Spacing="26" VerticalOptions="Center">
+                    <Label Text="Hello!" TextColor="White" FontSize="82" FontAttributes="Bold" />
+                    <Label Text="欢迎使用软体 AI 服务平台" TextColor="#D7ECFF" FontSize="34" FontAttributes="Bold" />
+                    <Label Text="请使用手机号和密码登录" TextColor="#8FEFFF" FontSize="24" />
                 </VerticalStackLayout>
 
                 <Border Grid.Column="1"
@@ -49,18 +35,13 @@
                         StrokeShape="RoundRectangle 42"
                         BackgroundColor="#B02A2946">
                     <VerticalStackLayout Spacing="28">
-                        <Label Text="登录"
-                               TextColor="White"
-                               FontSize="48"
-                               FontAttributes="Bold" />
+                        <Label Text="登录" TextColor="White" FontSize="48" FontAttributes="Bold" />
 
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="账号"
-                                   TextColor="White"
-                                   FontSize="22"
-                                   FontAttributes="Bold" />
-                            <Entry Text="{Binding Account}"
-                                   Placeholder="请输入账号 / 手机号"
+                            <Label Text="手机号" TextColor="White" FontSize="22" FontAttributes="Bold" />
+                            <Entry Text="{Binding Phone}"
+                                   Placeholder="请输入手机号"
+                                   Keyboard="Telephone"
                                    TextColor="White"
                                    PlaceholderColor="#9EB4D4"
                                    FontSize="22"
@@ -69,10 +50,7 @@
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="密码"
-                                   TextColor="White"
-                                   FontSize="22"
-                                   FontAttributes="Bold" />
+                            <Label Text="密码" TextColor="White" FontSize="22" FontAttributes="Bold" />
                             <Entry Text="{Binding Password}"
                                    Placeholder="请输入密码"
                                    IsPassword="True"
@@ -83,20 +61,21 @@
                                    BackgroundColor="#22132642" />
                         </VerticalStackLayout>
 
-                        <Grid ColumnDefinitions="*,Auto"
-                              Margin="0,-4,0,0">
-                            <HorizontalStackLayout Grid.Column="0"
-                                                   Spacing="10"
-                                                   VerticalOptions="Center">
-                                <CheckBox IsChecked="{Binding RememberAccount}"
-                                          Color="#18F7FF" />
-                                <Label Text="记住账号"
-                                       TextColor="#D7ECFF"
-                                       FontSize="20"
-                                       VerticalTextAlignment="Center" />
+                        <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,-4,0,0" ColumnSpacing="22">
+                            <HorizontalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center">
+                                <CheckBox IsChecked="{Binding RememberAccount}" Color="#18F7FF" />
+                                <Label Text="记住账号" TextColor="#D7ECFF" FontSize="20" VerticalTextAlignment="Center" />
                             </HorizontalStackLayout>
 
                             <Button Grid.Column="1"
+                                    Text="忘记密码"
+                                    Command="{Binding GoToResetPasswordCommand}"
+                                    FontSize="20"
+                                    TextColor="#D7ECFF"
+                                    BackgroundColor="Transparent"
+                                    Padding="0" />
+
+                            <Button Grid.Column="2"
                                     Text="注册账号"
                                     Command="{Binding GoToRegisterCommand}"
                                     FontSize="20"
