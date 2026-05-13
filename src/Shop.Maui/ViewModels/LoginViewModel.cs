@@ -72,6 +72,12 @@ public sealed class LoginViewModel : ObservableObject
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(result.ItsId))
+        {
+            await ShowAlertAsync("登录失败", "登录接口未返回有效身份信息，请确认账号密码是否正确。");
+            return;
+        }
+
         if (Microsoft.Maui.Controls.Application.Current is not null)
         {
             Microsoft.Maui.Controls.Application.Current.MainPage = _serviceProvider.GetRequiredService<AppShell>();

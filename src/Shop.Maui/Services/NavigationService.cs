@@ -12,9 +12,9 @@ public sealed class NavigationService : INavigationService
         await Shell.Current.GoToAsync($"image2category?categoryId={Uri.EscapeDataString(categoryId)}&categoryName={Uri.EscapeDataString(categoryName)}");
     }
 
-    public async Task GoToProductDetailAsync(string productId, string modelName, decimal salePrice, string? imageUrl)
+    public async Task GoToProductDetailAsync(string productId, string categoryId, string productType, string modelName, decimal salePrice, string? imageUrl)
     {
-        await Shell.Current.GoToAsync($"productdetail?productId={Uri.EscapeDataString(productId)}&modelName={Uri.EscapeDataString(modelName)}&salePrice={salePrice}&imageUrl={Uri.EscapeDataString(imageUrl ?? string.Empty)}");
+        await Shell.Current.GoToAsync($"productdetail?productId={Uri.EscapeDataString(productId)}&categoryId={Uri.EscapeDataString(categoryId)}&productType={Uri.EscapeDataString(productType)}&modelName={Uri.EscapeDataString(modelName)}&salePrice={salePrice}&imageUrl={Uri.EscapeDataString(imageUrl ?? string.Empty)}");
     }
 
     public async Task GoToProductPanoramaAsync()

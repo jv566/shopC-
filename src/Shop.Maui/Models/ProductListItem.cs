@@ -5,4 +5,5 @@ public sealed record ProductListItem(
     string CategoryId,
     string ModelName,
     decimal SalePrice,
-    string? ImageUrl);
+    string? ImageUrl,
+    string ProductType = "");

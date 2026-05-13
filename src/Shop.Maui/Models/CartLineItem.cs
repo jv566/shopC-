@@ -2,6 +2,8 @@ namespace Shop.Maui.Models;
 
 public sealed record CartLineItem(
     string ProductId,
+    string CategoryId,
+    string ProductType,
     string ModelName,
     decimal UnitPrice,
     int Quantity,

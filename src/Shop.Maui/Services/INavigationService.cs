@@ -6,7 +6,7 @@ public interface INavigationService
 
     Task GoToCategoryWallAsync(string categoryId, string categoryName);
 
-    Task GoToProductDetailAsync(string productId, string modelName, decimal salePrice, string? imageUrl);
+    Task GoToProductDetailAsync(string productId, string categoryId, string productType, string modelName, decimal salePrice, string? imageUrl);
 
     Task GoToProductPanoramaAsync();
 

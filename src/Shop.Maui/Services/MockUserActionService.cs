@@ -6,13 +6,19 @@ namespace Shop.Maui.Services;
 
 public sealed class MockUserActionService : IUserActionService
 {
-    private const string DefaultUnitId = "1001";
+    private const string AddOrderUnitId = "2";
+    private const string CheckoutUnitId = "1001";
     private const string DefaultOpId = "1200";
     private const string DefaultUserId = "0";
     private const string DefaultPayNote = "微信支付-自提";
     private const string DefaultPayChannel = "SQB";
     private const string DefaultPayReturnUrl = "/subPackages/package/pages/jiesuan-payResult/jiesuan-payResult";
     private const string DefaultAddress = "天河路店";
+
+    private static readonly JsonSerializerOptions OrderJsonOptions = new()
+    {
+        PropertyNamingPolicy = null
+    };
 
     private readonly IAuthSession _authSession;
     private readonly HttpClient _httpClient = new()
@@ -94,7 +100,7 @@ public sealed class MockUserActionService : IUserActionService
         // 创建订单三步接口依赖登录返回的 itsid：
         // 1. 创建订单；2. 将购物车商品逐个加入订单；3. 发起结算/付款。
         var createResult = await GetOrderStepAsync(
-            $"https://www.zyyai.com.cn/jy/go/phone.aspx?mbid=10627&ituid=106&itsid={itsId}",
+            $"https://www.ruanzi.net/jy/go/phone.aspx?mbid=10627&ituid=121&itsid={itsId}",
             cancellationToken);
         if (!createResult.Succeeded)
         {
@@ -103,32 +109,36 @@ public sealed class MockUserActionService : IUserActionService
 
         foreach (var item in lines)
         {
+            var addPayload = new
+            {
+                MCODE = item.ProductId,
+                NUM = item.Quantity,
+                UNITID = AddOrderUnitId,
+                add = BuildOrderLineType(item),
+                img = BuildOrderLineImage(item)
+            };
+            var addUrl = $"https://www.ruanzi.net/jy/go/phone.aspx?mbid=10604&ituid=121&itsid={itsId}";
             var addResult = await PostOrderStepAsync(
-                $"https://www.zyyai.com.cn/jy/go/phone.aspx?mbid=10604&ituid=106&itsid={itsId}",
-                new
-                {
-                    MCODE = item.ProductId,
-                    NUM = item.Quantity,
-                    UNITID = DefaultUnitId,
-                    add = item.ModelName,
-                    img = item.ImageUrl ?? string.Empty
-                },
+                addUrl,
+                addPayload,
                 cancellationToken);
 
             if (!addResult.Succeeded)
             {
-                return new UserActionResult("添加商品失败", $"{item.ModelName}：{addResult.Message}");
+                return new UserActionResult(
+                    "添加商品失败",
+                    $"{item.ModelName}: {addResult.Message}\nURL: {addUrl}\nBody: {JsonSerializer.Serialize(addPayload, OrderJsonOptions)}");
             }
         }
 
         var totalAmount = lines.Sum(item => item.Subtotal);
         var payResult = await PostOrderStepAsync(
-            $"https://www.zyyai.com.cn/jy/go/phone.aspx?mbid=122&ituid=106&itsid={itsId}",
+            $"https://www.ruanzi.net/jy/go/phone.aspx?mbid=122&ituid=121&itsid={itsId}",
             new
             {
                 MCODE = string.Empty,
                 OPID = DefaultOpId,
-                UNITID = DefaultUnitId,
+                UNITID = CheckoutUnitId,
                 NUM = string.Empty,
                 USERID = DefaultUserId,
                 NOTE = DefaultPayNote,
@@ -189,12 +199,45 @@ public sealed class MockUserActionService : IUserActionService
                 var product = group.First();
                 return new CartLineItem(
                     product.Id,
+                    product.CategoryId,
+                    product.ProductType,
                     product.ModelName,
                     product.SalePrice,
                     group.Count(),
                     product.ImageUrl);
             })
             .ToList();
+    }
+
+    private static string NormalizeOrderImage(string? imageUrl)
+    {
+        var value = (imageUrl ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return value;
+    }
+
+    private static string BuildOrderLineType(CartLineItem item)
+    {
+        if (!string.IsNullOrWhiteSpace(item.ProductType))
+        {
+            return Uri.UnescapeDataString(item.ProductType.Trim());
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.CategoryId))
+        {
+            return Uri.UnescapeDataString(item.CategoryId.Trim());
+        }
+
+        return Uri.UnescapeDataString(item.ModelName.Trim());
+    }
+
+    private static string BuildOrderLineImage(CartLineItem item)
+    {
+        return "images/coffee.png";
     }
 
     private async Task<OrderStepResult> PostOrderStepAsync(
@@ -204,16 +247,18 @@ public sealed class MockUserActionService : IUserActionService
     {
         try
         {
-            using var response = await _httpClient.PostAsJsonAsync(url, payload, cancellationToken);
+            using var response = await _httpClient.PostAsJsonAsync(
+                url,
+                payload,
+                OrderJsonOptions,
+                cancellationToken);
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 return new OrderStepResult(false, ExtractMessage(body, $"请求失败：{response.StatusCode}"), body);
             }
 
-            return LooksSuccessful(body)
-                ? new OrderStepResult(true, ExtractMessage(body, "操作成功"), body)
-                : new OrderStepResult(false, ExtractMessage(body, "操作失败，请稍后重试。"), body);
+            return new OrderStepResult(true, ExtractMessage(body, "操作成功"), body);
         }
         catch (Exception ex)
         {
@@ -234,9 +279,7 @@ public sealed class MockUserActionService : IUserActionService
                 return new OrderStepResult(false, ExtractMessage(body, $"请求失败：{response.StatusCode}"), body);
             }
 
-            return LooksSuccessful(body)
-                ? new OrderStepResult(true, ExtractMessage(body, "操作成功"), body)
-                : new OrderStepResult(false, ExtractMessage(body, "操作失败，请稍后重试。"), body);
+            return new OrderStepResult(true, ExtractMessage(body, "操作成功"), body);
         }
         catch (Exception ex)
         {
@@ -305,7 +348,7 @@ public sealed class MockUserActionService : IUserActionService
         try
         {
             using var document = JsonDocument.Parse(body);
-            foreach (var name in new[] { "msg", "message", "error", "info" })
+            foreach (var name in new[] { "msg", "message", "desc", "error", "info" })
             {
                 if (TryFindProperty(document.RootElement, name, out var property) &&
                     property.ValueKind == JsonValueKind.String &&

@@ -151,6 +151,8 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
                 // 传入商品 id、型号、价格、图片
                 await _navigationService.GoToProductDetailAsync(
                     product.Id,
+                    product.CategoryId,
+                    ResolveProductType(product),
                     product.ModelName,
                     product.SalePrice,
                     product.ImageUrl);
@@ -773,5 +775,21 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         }
 
         return $"型号{modelName}";
+    }
+
+    private string ResolveProductType(ProductListItem product)
+    {
+        var category = CategoryTree
+            .SelectMany(group => group.SecondaryCategories.Prepend(group.PrimaryCategory))
+            .FirstOrDefault(item => string.Equals(item.Id, product.CategoryId, StringComparison.OrdinalIgnoreCase));
+
+        if (!string.IsNullOrWhiteSpace(category?.DisplayName))
+        {
+            return category.DisplayName;
+        }
+
+        return string.IsNullOrWhiteSpace(product.ProductType)
+            ? product.CategoryId
+            : product.ProductType;
     }
 }

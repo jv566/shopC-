@@ -135,6 +135,8 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         var productId = query.TryGetValue("productId", out var pid) ? pid as string : null;
+        var categoryId = query.TryGetValue("categoryId", out var cid) ? cid as string : null;
+        var productType = query.TryGetValue("productType", out var type) ? type as string : null;
         var modelName = query.TryGetValue("modelName", out var name) ? name as string : null;
         var imageUrl = query.TryGetValue("imageUrl", out var img) ? img as string : null;
         var salePrice = query.TryGetValue("salePrice", out var priceObj) &&
@@ -149,7 +151,7 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
         }
 
         _requestedProductId = productId.Trim();
-        Product = new ProductListItem(productId, string.Empty, modelName, salePrice, imageUrl);
+        Product = new ProductListItem(productId, categoryId ?? string.Empty, modelName, salePrice, imageUrl, productType ?? string.Empty);
         ApplyProductSnapshot(Product, null, null);
         ProductDescriptionSource = CreateDescriptionSource(null, "介绍加载中...");
     }
@@ -171,7 +173,8 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
                 Product.CategoryId,
                 string.IsNullOrWhiteSpace(detail.Name) ? Product.ModelName : detail.Name,
                 detail.Price ?? Product.SalePrice,
-                string.IsNullOrWhiteSpace(detail.ImageUrl) ? Product.ImageUrl : detail.ImageUrl);
+                string.IsNullOrWhiteSpace(detail.ImageUrl) ? Product.ImageUrl : detail.ImageUrl,
+                Product.ProductType);
 
             ApplyProductSnapshot(Product, detail.OriginalPriceText, detail.Description);
         }
@@ -553,7 +556,8 @@ public sealed class ProductDetailViewModel : ObservableObject, IQueryAttributabl
             Product.CategoryId,
             Product.ModelName,
             price,
-            imageUrl);
+            imageUrl,
+            Product.ProductType);
 
         ProductPriceText = FormatPrice(price);
         if (matchedSku.OriginalPrice is not null)
