@@ -38,15 +38,24 @@
                         CornerRadius="8"
                         Clicked="OnBackClicked" />
 
-                <Label AbsoluteLayout.LayoutBounds="116,88,1688,64"
-                       AbsoluteLayout.LayoutFlags="None"
-                       Text="购物车"
-                       TextColor="White"
-                       FontSize="42"
-                       FontAttributes="Bold"
-                       VerticalTextAlignment="Center" />
+                <Grid AbsoluteLayout.LayoutBounds="116,88,1688,64"
+                      AbsoluteLayout.LayoutFlags="None"
+                      ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="购物车"
+                           TextColor="White"
+                           FontSize="42"
+                           FontAttributes="Bold"
+                           VerticalTextAlignment="Center" />
+                    <Label Grid.Column="1"
+                           Text="{Binding ItemCountText}"
+                           TextColor="#B8D6F5"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           VerticalTextAlignment="Center" />
+                </Grid>
 
-                <Border AbsoluteLayout.LayoutBounds="116,174,1688,730"
+                <Border AbsoluteLayout.LayoutBounds="116,174,1688,720"
                         AbsoluteLayout.LayoutFlags="None"
                         Stroke="#3B73AA"
                         StrokeThickness="1"
@@ -138,33 +147,56 @@
                     </Grid>
                 </Border>
 
-                <Border AbsoluteLayout.LayoutBounds="116,926,1688,100"
+                <Border AbsoluteLayout.LayoutBounds="116,918,1688,112"
                         AbsoluteLayout.LayoutFlags="None"
                         StrokeThickness="0"
                         StrokeShape="RoundRectangle 8"
                         BackgroundColor="#E6315F98"
-                        Padding="32,0">
-                    <Grid ColumnDefinitions="*,Auto,220"
-                          ColumnSpacing="28">
-                        <Label Grid.Column="0"
-                               Text="{Binding ItemCountText}"
-                               TextColor="#D7ECFF"
-                               FontSize="26"
-                               FontAttributes="Bold"
-                               VerticalTextAlignment="Center" />
+                        Padding="34,0">
+                    <Grid ColumnDefinitions="*,Auto,220,220"
+                          ColumnSpacing="24">
+                        <VerticalStackLayout Grid.Column="0"
+                                             Spacing="6"
+                                             VerticalOptions="Center">
+                            <Label Text="购物车商品"
+                                   TextColor="White"
+                                   FontSize="28"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding ItemCountText}"
+                                   TextColor="#B8D6F5"
+                                   FontSize="22"
+                                   FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
                         <Label Grid.Column="1"
                                Text="合计"
-                               TextColor="White"
-                               FontSize="30"
+                               TextColor="#D7ECFF"
+                               FontSize="28"
                                FontAttributes="Bold"
                                VerticalTextAlignment="Center" />
+
                         <Label Grid.Column="2"
                                Text="{Binding TotalAmountText}"
                                TextColor="#18F7FF"
-                               FontSize="34"
+                               FontSize="36"
                                FontAttributes="Bold"
                                HorizontalTextAlignment="End"
                                VerticalTextAlignment="Center" />
+
+                        <Button Grid.Column="3"
+                                Text="购买"
+                                Command="{Binding CheckoutCommand}"
+                                HeightRequest="66"
+                                WidthRequest="188"
+                                HorizontalOptions="End"
+                                VerticalOptions="Center"
+                                FontSize="28"
+                                FontAttributes="Bold"
+                                TextColor="#071629"
+                                BackgroundColor="#18F7FF"
+                                BorderColor="#A9FBFF"
+                                BorderWidth="1"
+                                CornerRadius="8" />
                     </Grid>
                 </Border>
             </AbsoluteLayout>

@@ -104,21 +104,33 @@ public sealed class MockUserActionService : IUserActionService
 
     public Task<IReadOnlyList<CartLineItem>> GetCartItemsAsync(CancellationToken cancellationToken = default)
     {
-        var items = _cartItems
-            .GroupBy(item => item.Id)
-            .Select(group =>
-            {
-                var product = group.First();
-                return new CartLineItem(
-                    product.Id,
-                    product.ModelName,
-                    product.SalePrice,
-                    group.Count(),
-                    product.ImageUrl);
-            })
-            .ToList();
+        return Task.FromResult<IReadOnlyList<CartLineItem>>(BuildCartLineItems());
+    }
 
-        return Task.FromResult<IReadOnlyList<CartLineItem>>(items);
+    public Task<UserActionResult> CheckoutCartAsync(CancellationToken cancellationToken = default)
+    {
+        var lines = BuildCartLineItems();
+        if (lines.Count == 0)
+        {
+            return Task.FromResult(new UserActionResult("购物车", "购物车为空，无法购买。"));
+        }
+
+        var orderNo = $"SO-{DateTime.Now:yyyyMMdd}-{_myOrders.Count + 1:000}";
+        _myOrders.Insert(
+            0,
+            new OrderListItem(
+                orderNo,
+                "待确认",
+                DateTime.Now,
+                lines
+                    .Select(item => new OrderLineItem(item.ModelName, item.Quantity, item.UnitPrice))
+                    .ToList()));
+
+        _cartItems.Clear();
+
+        return Task.FromResult(new UserActionResult(
+            "购买成功",
+            $"已创建订单 {orderNo}，合计 ￥{lines.Sum(item => item.Subtotal):F2}。"));
     }
 
     public Task<IReadOnlyList<OrderListItem>> GetMyOrdersAsync(CancellationToken cancellationToken = default)
@@ -137,5 +149,22 @@ public sealed class MockUserActionService : IUserActionService
         return Task.FromResult(new UserActionResult(
             "二维码同步",
             $"二维码同步完成，第 {_syncCount} 次请求已返回成功。"));
+    }
+
+    private List<CartLineItem> BuildCartLineItems()
+    {
+        return _cartItems
+            .GroupBy(item => item.Id)
+            .Select(group =>
+            {
+                var product = group.First();
+                return new CartLineItem(
+                    product.Id,
+                    product.ModelName,
+                    product.SalePrice,
+                    group.Count(),
+                    product.ImageUrl);
+            })
+            .ToList();
     }
 }

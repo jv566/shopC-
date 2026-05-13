@@ -16,6 +16,8 @@ public interface IUserActionService
 
     Task<IReadOnlyList<CartLineItem>> GetCartItemsAsync(CancellationToken cancellationToken = default);
 
+    Task<UserActionResult> CheckoutCartAsync(CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<OrderListItem>> GetMyOrdersAsync(CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<OrderListItem>> GetHistoryOrdersAsync(CancellationToken cancellationToken = default);

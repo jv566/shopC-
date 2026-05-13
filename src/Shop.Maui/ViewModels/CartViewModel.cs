@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using Shop.Maui.Models;
 using Shop.Maui.Services;
 
@@ -19,6 +20,8 @@ public sealed class CartViewModel : ObservableObject
 
     public string TotalAmountText => $"￥{TotalAmount:F2}";
 
+    public ICommand CheckoutCommand { get; }
+
     public decimal TotalAmount
     {
         get => _totalAmount;
@@ -34,6 +37,7 @@ public sealed class CartViewModel : ObservableObject
     public CartViewModel(IUserActionService userActionService)
     {
         _userActionService = userActionService;
+        CheckoutCommand = new Command(async () => await CheckoutAsync(), () => HasItems);
     }
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
@@ -41,8 +45,25 @@ public sealed class CartViewModel : ObservableObject
         var items = await _userActionService.GetCartItemsAsync(cancellationToken);
         ReplaceCollection(Items, items);
         TotalAmount = Items.Sum(item => item.Subtotal);
+        OnCartStateChanged();
+    }
+
+    private async Task CheckoutAsync()
+    {
+        var result = await _userActionService.CheckoutCartAsync();
+        if (Shell.Current is not null)
+        {
+            await Shell.Current.DisplayAlert(result.Title, result.Message, "确定");
+        }
+
+        await InitializeAsync();
+    }
+
+    private void OnCartStateChanged()
+    {
         OnPropertyChanged(nameof(HasItems));
         OnPropertyChanged(nameof(IsEmpty));
         OnPropertyChanged(nameof(ItemCountText));
+        (CheckoutCommand as Command)?.ChangeCanExecute();
     }
 }
