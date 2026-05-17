@@ -40,7 +40,7 @@ public sealed class HttpAuthService : IAuthService
         {
             // 登录接口返回的 itsid 是后续用户态接口的关键身份字段。
             // 下单、我的订单、历史订单等接口对接后，应从 IAuthSession.ItsId 读取并随请求上传。
-            _authSession.SetLoginSession(normalizedPhone, result.ItsId);
+            _authSession.SetLoginSession(normalizedPhone, result.ItsId, result.UnitId);
         }
 
         return result;
@@ -130,8 +130,9 @@ public sealed class HttpAuthService : IAuthService
             }
 
             var itsId = ExtractItsId(body);
+            var unitId = ExtractUnitId(body);
             return LooksSuccessful(body)
-                ? new AuthResult(true, ExtractMessage(body, successMessage), itsId)
+                ? new AuthResult(true, ExtractMessage(body, successMessage), itsId, unitId)
                 : new AuthResult(false, ExtractMessage(body, "操作失败，请检查输入后重试。"), itsId);
         }
         catch (Exception ex)
@@ -225,6 +226,16 @@ public sealed class HttpAuthService : IAuthService
 
     private static string? ExtractItsId(string body)
     {
+        return ExtractStringProperty(body, "itsid");
+    }
+
+    private static string? ExtractUnitId(string body)
+    {
+        return ExtractStringProperty(body, "unitid");
+    }
+
+    private static string? ExtractStringProperty(string body, string propertyName)
+    {
         if (string.IsNullOrWhiteSpace(body))
         {
             return null;
@@ -233,7 +244,7 @@ public sealed class HttpAuthService : IAuthService
         try
         {
             using var document = JsonDocument.Parse(body);
-            return TryFindProperty(document.RootElement, "itsid", out var property)
+            return TryFindProperty(document.RootElement, propertyName, out var property)
                 ? property.ToString()
                 : null;
         }

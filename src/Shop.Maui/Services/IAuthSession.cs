@@ -4,11 +4,13 @@ public interface IAuthSession
 {
     string? ItsId { get; }
 
+    string? UnitId { get; }
+
     string? Phone { get; }
 
     bool IsLoggedIn { get; }
 
-    void SetLoginSession(string phone, string itsId);
+    void SetLoginSession(string phone, string itsId, string? unitId);
 
     void Clear();
 }

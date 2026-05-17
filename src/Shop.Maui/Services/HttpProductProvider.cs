@@ -22,6 +22,13 @@ public sealed class HttpProductProvider : IProductProvider
         Timeout = TimeSpan.FromSeconds(10)
     };
 
+    private readonly IAuthSession _authSession;
+
+    public HttpProductProvider(IAuthSession authSession)
+    {
+        _authSession = authSession;
+    }
+
     public async Task<IReadOnlyList<ProductListItem>> GetProductsAsync(
         string categoryId,
         CancellationToken cancellationToken = default)
@@ -31,14 +38,17 @@ public sealed class HttpProductProvider : IProductProvider
             return Array.Empty<ProductListItem>();
         }
 
-        var cacheKey = categoryId.Trim();
+        var unitId = _authSession.UnitId?.Trim();
+        var cacheKey = string.IsNullOrWhiteSpace(unitId)
+            ? categoryId.Trim()
+            : $"{categoryId.Trim()}|unitid:{unitId}";
 
         if (_cache.TryGetValue(cacheKey, out var cached))
         {
             return cached;
         }
 
-        var products = await FetchProductsAsync(cacheKey, cancellationToken);
+        var products = await FetchProductsAsync(categoryId.Trim(), unitId, cancellationToken);
 
         if (products.Count > 0)
         {
@@ -50,12 +60,19 @@ public sealed class HttpProductProvider : IProductProvider
 
     private async Task<IReadOnlyList<ProductListItem>> FetchProductsAsync(
         string categoryId,
+        string? unitId,
         CancellationToken cancellationToken)
     {
         try
         {
             var requestUrl =
                 $"{ProductListBaseUrl}&keyvalue={Uri.EscapeDataString(categoryId)}";
+            if (!string.IsNullOrWhiteSpace(unitId))
+            {
+                requestUrl += $"&unitid={Uri.EscapeDataString(unitId)}";
+            }
+
+            Console.WriteLine($"Product list request: {requestUrl}");
 
             using var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
             response.EnsureSuccessStatusCode();

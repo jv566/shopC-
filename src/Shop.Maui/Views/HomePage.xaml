@@ -73,8 +73,7 @@
                               AnchorY="0.5"
                               HorizontalOptions="Center"
                               VerticalOptions="Center"
-                              TranslationX="-40"
-                              TranslationY="-10"
+                              
                                >
 
                             <Image Source="category_badge_background.png"

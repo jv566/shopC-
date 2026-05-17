@@ -13,4 +13,4 @@ public interface IAuthService
     Task<AuthResult> ResetPasswordAsync(string phone, string password, string confirmPassword, string checkCode, CancellationToken cancellationToken = default);
 }
 
-public sealed record AuthResult(bool Succeeded, string Message, string? ItsId = null);
+public sealed record AuthResult(bool Succeeded, string Message, string? ItsId = null, string? UnitId = null);
