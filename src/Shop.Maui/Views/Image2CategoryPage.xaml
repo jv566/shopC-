@@ -30,7 +30,7 @@
             <AbsoluteLayout WidthRequest="1920"
                             HeightRequest="1080">
 
-                <Button AbsoluteLayout.LayoutBounds="24,24,132,52"
+                <Button AbsoluteLayout.LayoutBounds="894,1030,132,52"
                         AbsoluteLayout.LayoutFlags="None"
                         Text="&#x2190; &#x8FD4;&#x56DE;"
                         FontSize="24"

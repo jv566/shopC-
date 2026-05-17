@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Globalization;
 using System.Text.Json;
 using Shop.Maui.Models;
 
@@ -172,14 +173,14 @@ public sealed class MockUserActionService : IUserActionService
         return new UserActionResult("购买成功", $"订单已提交，合计 ￥{totalAmount:F2}。");
     }
 
-    public Task<IReadOnlyList<OrderListItem>> GetMyOrdersAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<OrderListItem>> GetMyOrdersAsync(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<IReadOnlyList<OrderListItem>>(_myOrders.ToList());
+        return await FetchOrdersAsync(_myOrders, cancellationToken);
     }
 
-    public Task<IReadOnlyList<OrderListItem>> GetHistoryOrdersAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<OrderListItem>> GetHistoryOrdersAsync(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<IReadOnlyList<OrderListItem>>(_historyOrders.ToList());
+        return await FetchOrdersAsync(_historyOrders, cancellationToken);
     }
 
     public Task<UserActionResult> SyncQrAsync(CancellationToken cancellationToken = default)
@@ -207,6 +208,115 @@ public sealed class MockUserActionService : IUserActionService
                     product.ImageUrl);
             })
             .ToList();
+    }
+
+    private async Task<IReadOnlyList<OrderListItem>> FetchOrdersAsync(
+        IReadOnlyList<OrderListItem> fallbackOrders,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(_authSession.ItsId))
+        {
+            return fallbackOrders.ToList();
+        }
+
+        try
+        {
+            var requestUrl =
+                $"https://www.ruanzi.net/jy/go/we.aspx?ituid=121&itjid=12107&itcid=12107&itsid={Uri.EscapeDataString(_authSession.ItsId)}";
+
+            using var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                return fallbackOrders.ToList();
+            }
+
+            var body = await response.Content.ReadAsStringAsync(cancellationToken);
+            var json = ExtractJsonObject(body);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return fallbackOrders.ToList();
+            }
+
+            using var document = JsonDocument.Parse(json);
+            if (!TryFindProperty(document.RootElement, "goods", out var goods) ||
+                goods.ValueKind != JsonValueKind.Array)
+            {
+                return fallbackOrders.ToList();
+            }
+
+            var orders = goods
+                .EnumerateArray()
+                .Select(ParseOrder)
+                .OfType<OrderListItem>()
+                .ToList();
+
+            return orders.Count == 0 ? Array.Empty<OrderListItem>() : orders;
+        }
+        catch
+        {
+            return fallbackOrders.ToList();
+        }
+    }
+
+    private static OrderListItem? ParseOrder(JsonElement item)
+    {
+        var orderNo = FirstNonEmpty(
+            GetString(item, "orderNo"),
+            GetString(item, "orderno"),
+            GetString(item, "orderNumber"),
+            GetString(item, "orderid"),
+            GetString(item, "id"),
+            GetString(item, "code"),
+            GetString(item, "NO"));
+
+        if (string.IsNullOrWhiteSpace(orderNo))
+        {
+            orderNo = $"ORDER-{DateTime.Now:yyyyMMddHHmmss}";
+        }
+
+        var status = FirstNonEmpty(
+            GetString(item, "status"),
+            GetString(item, "state"),
+            GetString(item, "zt"),
+            GetString(item, "ZT"),
+            "已下单");
+
+        var createdAt = ParseDate(FirstNonEmpty(
+            GetString(item, "createdAt"),
+            GetString(item, "createTime"),
+            GetString(item, "time"),
+            GetString(item, "date"),
+            GetString(item, "rq"),
+            GetString(item, "RQ")));
+
+        var productName = FirstNonEmpty(
+            GetString(item, "name"),
+            GetString(item, "productName"),
+            GetString(item, "goodsName"),
+            GetString(item, "mname"),
+            GetString(item, "MNAME"),
+            GetString(item, "MCODE"),
+            "商品");
+
+        var quantity = ParseInt(FirstNonEmpty(
+            GetString(item, "num"),
+            GetString(item, "NUM"),
+            GetString(item, "quantity"),
+            GetString(item, "sl"),
+            GetString(item, "SL")), 1);
+
+        var unitPrice = ParseDecimal(FirstNonEmpty(
+            GetString(item, "price"),
+            GetString(item, "PRICE"),
+            GetString(item, "unitPrice"),
+            GetString(item, "AMT"),
+            GetString(item, "amt")), 0m);
+
+        return new OrderListItem(
+            orderNo,
+            status,
+            createdAt,
+            [new OrderLineItem(productName, quantity, unitPrice)]);
     }
 
     private static string NormalizeOrderImage(string? imageUrl)
@@ -363,6 +473,59 @@ public sealed class MockUserActionService : IUserActionService
         }
 
         return body.Length > 80 ? fallback : body;
+    }
+
+    private static string ExtractJsonObject(string body)
+    {
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            return string.Empty;
+        }
+
+        var text = body.Trim();
+        if (text.StartsWith('{') && text.EndsWith('}'))
+        {
+            return text;
+        }
+
+        var start = text.IndexOf('{');
+        var end = text.LastIndexOf('}');
+        return start >= 0 && end > start
+            ? text[start..(end + 1)]
+            : string.Empty;
+    }
+
+    private static string GetString(JsonElement element, string propertyName)
+    {
+        return TryFindProperty(element, propertyName, out var property)
+            ? property.ToString()
+            : string.Empty;
+    }
+
+    private static string FirstNonEmpty(params string[] values)
+    {
+        return values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value))?.Trim() ?? string.Empty;
+    }
+
+    private static DateTime ParseDate(string value)
+    {
+        return DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var date)
+            ? date
+            : DateTime.Now;
+    }
+
+    private static int ParseInt(string value, int fallback)
+    {
+        return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number) && number > 0
+            ? number
+            : fallback;
+    }
+
+    private static decimal ParseDecimal(string value, decimal fallback)
+    {
+        return decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var number)
+            ? number
+            : fallback;
     }
 
     private static string? ExtractOrderNo(string body)

@@ -26,7 +26,7 @@
             <AbsoluteLayout WidthRequest="1920"
                             HeightRequest="1080">
 
-                <Button AbsoluteLayout.LayoutBounds="24,24,132,52"
+                <Button AbsoluteLayout.LayoutBounds="894,1034,132,52"
                         AbsoluteLayout.LayoutFlags="None"
                         Text="&#x2190; &#x8FD4;&#x56DE;"
                         FontSize="24"
@@ -370,11 +370,8 @@
                                 </Grid>
                             </ScrollView>
 
-                            <Grid Grid.Row="3"
-                                  ColumnDefinitions="*,*"
-                                  ColumnSpacing="18">
-                                <Button Grid.Column="0"
-                                        Text="加入购物车"
+                            <Grid Grid.Row="3">
+                                <Button Text="加入购物车"
                                         BackgroundColor="#18A5FF"
                                         TextColor="White"
                                         FontAttributes="Bold"
@@ -382,15 +379,6 @@
                                         CornerRadius="8"
                                         HeightRequest="70"
                                         Command="{Binding AddToCartCommand}" />
-                                <Button Grid.Column="1"
-                                        Text="立即购买"
-                                        BackgroundColor="#18F7FF"
-                                        TextColor="#071629"
-                                        FontAttributes="Bold"
-                                        FontSize="26"
-                                        CornerRadius="8"
-                                        HeightRequest="70"
-                                        Command="{Binding BuyNowCommand}" />
                             </Grid>
                         </Grid>
                     </Grid>

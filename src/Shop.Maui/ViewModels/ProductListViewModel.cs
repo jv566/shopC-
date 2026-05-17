@@ -46,7 +46,6 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
 
     // 防止 InitializeAsync 重复执行
     private bool _isInitialized;
-    private bool _isPagePreloadStarted;
     private int _productLoadVersion;
     private CancellationTokenSource? _productLoadCts;
 
@@ -178,11 +177,16 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         if (!string.IsNullOrWhiteSpace(categoryId) &&
             !string.IsNullOrWhiteSpace(categoryName))
         {
-            // 保存入口分类
-            // 说明用户是从某个分类入口进来的
-            _entryCategory = new ProductCategoryOption(categoryId, categoryName);
+            var newCategory = new ProductCategoryOption(categoryId, categoryName);
 
-            // 更新页面显示文字
+            if (_entryCategory is null ||
+                !string.Equals(_entryCategory.Id, newCategory.Id, StringComparison.OrdinalIgnoreCase))
+            {
+                _isInitialized = false;
+            }
+
+            _entryCategory = newCategory;
+
             CurrentCategoryText = $"当前分类：{categoryName}";
         }
     }
@@ -247,7 +251,6 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
             await SelectSecondaryCategoryAsync(matchedSecondary, cancellationToken);
 
             _isInitialized = true;
-            StartPageDataPreload();
             return;
         }
 
@@ -255,7 +258,6 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         await SelectPrimaryCategoryAsync(targetGroup.PrimaryCategory, cancellationToken);
 
         _isInitialized = true;
-        StartPageDataPreload();
     }
 
     // 选择一级分类
@@ -369,11 +371,6 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
         }
 
         ReplaceCollection(DisplayProducts, displayProducts);
-
-        if (targetGroup is not null)
-        {
-            PrefetchSecondaryProducts(targetGroup.SecondaryCategories, secondaryCategory.Id);
-        }
     }
 
     // 判断入口分类是否和某个候选值匹配
@@ -511,98 +508,6 @@ public sealed class ProductListViewModel : ObservableObject, IQueryAttributable
     private bool IsCurrentProductLoad(int loadVersion, CancellationToken cancellationToken)
     {
         return loadVersion == _productLoadVersion && !cancellationToken.IsCancellationRequested;
-    }
-
-    private void PrefetchSecondaryProducts(
-        IEnumerable<ProductCategoryOption> secondaryCategories,
-        string selectedSecondaryId)
-    {
-        var nextCategories = secondaryCategories
-            .Where(category => !string.Equals(category.Id, selectedSecondaryId, StringComparison.OrdinalIgnoreCase))
-            .Select(category => category.Id)
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .ToList();
-
-        if (nextCategories.Count == 0)
-        {
-            return;
-        }
-
-        _ = Task.Run(async () =>
-        {
-            using var throttler = new SemaphoreSlim(2);
-            var tasks = nextCategories.Select(async categoryId =>
-            {
-                await throttler.WaitAsync().ConfigureAwait(false);
-
-                try
-                {
-                    await _productProvider.GetProductsAsync(categoryId, CancellationToken.None).ConfigureAwait(false);
-                }
-                finally
-                {
-                    throttler.Release();
-                }
-            });
-
-            try
-            {
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
-            catch
-            {
-            }
-        });
-    }
-
-    // 构建页面展示用的商品卡片列表
-    private void StartPageDataPreload()
-    {
-        if (_isPagePreloadStarted || CategoryTree.Count == 0)
-        {
-            return;
-        }
-
-        _isPagePreloadStarted = true;
-
-        var categoryIds = CategoryTree
-            .SelectMany(group => group.SecondaryCategories)
-            .Select(category => category.Id)
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Where(id => !string.Equals(id, ActiveSecondaryId, StringComparison.OrdinalIgnoreCase))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        if (categoryIds.Count == 0)
-        {
-            return;
-        }
-
-        _ = Task.Run(async () =>
-        {
-            using var throttler = new SemaphoreSlim(3);
-            var tasks = categoryIds.Select(async categoryId =>
-            {
-                await throttler.WaitAsync().ConfigureAwait(false);
-
-                try
-                {
-                    await _productProvider.GetProductsAsync(categoryId, CancellationToken.None).ConfigureAwait(false);
-                }
-                finally
-                {
-                    throttler.Release();
-                }
-            });
-
-            try
-            {
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
-            catch
-            {
-            }
-        });
     }
 
     private Task<IReadOnlyList<ProductListDisplayItem>> BuildDisplayProductsAsync(

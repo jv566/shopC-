@@ -17,7 +17,6 @@ public sealed class HttpProductProvider : IProductProvider
     };
 
     private readonly ConcurrentDictionary<string, IReadOnlyList<ProductListItem>> _cache = new(StringComparer.OrdinalIgnoreCase);
-    private readonly ConcurrentDictionary<string, Lazy<Task<ProductFetchResult>>> _inflight = new(StringComparer.OrdinalIgnoreCase);
     private readonly HttpClient _httpClient = new()
     {
         Timeout = TimeSpan.FromSeconds(10)
@@ -33,34 +32,23 @@ public sealed class HttpProductProvider : IProductProvider
         }
 
         var cacheKey = categoryId.Trim();
-        if (_cache.TryGetValue(cacheKey, out var cachedProducts))
+
+        if (_cache.TryGetValue(cacheKey, out var cached))
         {
-            return cachedProducts;
+            return cached;
         }
 
-        var lazy = _inflight.GetOrAdd(
-            cacheKey,
-            key => new Lazy<Task<ProductFetchResult>>(
-                () => FetchProductsAsync(key, cancellationToken),
-                LazyThreadSafetyMode.ExecutionAndPublication));
+        var products = await FetchProductsAsync(cacheKey, cancellationToken);
 
-        try
+        if (products.Count > 0)
         {
-            var result = await lazy.Value.ConfigureAwait(false);
-            if (result.Succeeded && !cancellationToken.IsCancellationRequested)
-            {
-                _cache.TryAdd(cacheKey, result.Products);
-            }
+            _cache.TryAdd(cacheKey, products);
+        }
 
-            return result.Products;
-        }
-        finally
-        {
-            _inflight.TryRemove(cacheKey, out _);
-        }
+        return products;
     }
 
-    private async Task<ProductFetchResult> FetchProductsAsync(
+    private async Task<IReadOnlyList<ProductListItem>> FetchProductsAsync(
         string categoryId,
         CancellationToken cancellationToken)
     {
@@ -85,15 +73,13 @@ public sealed class HttpProductProvider : IProductProvider
                 .OfType<ProductListItem>()
                 .ToList();
 
-            return new ProductFetchResult(
-                true,
-                products is { Count: > 0 }
-                    ? products
-                    : Array.Empty<ProductListItem>());
+            return products is { Count: > 0 }
+                ? products
+                : Array.Empty<ProductListItem>();
         }
         catch
         {
-            return new ProductFetchResult(false, Array.Empty<ProductListItem>());
+            return Array.Empty<ProductListItem>();
         }
     }
 
@@ -172,8 +158,4 @@ public sealed class HttpProductProvider : IProductProvider
         [JsonPropertyName("pic")]
         public string? PictureUrl { get; set; }
     }
-
-    private sealed record ProductFetchResult(
-        bool Succeeded,
-        IReadOnlyList<ProductListItem> Products);
 }
